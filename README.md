@@ -2,6 +2,9 @@
 
 This library provides a beautiful date picker for Jetpack Compose, following the latest material 3 guidelines.
 
+<img src="docs/screenshots/daymonth.png" width="200" />
+<img src="docs/screenshots/year.png" width="200" />
+
 ## Dependency
 
 Make sure to add Maven Central to your repositories declarations:
