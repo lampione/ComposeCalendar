@@ -1,9 +1,11 @@
+[![Maven Central](https://img.shields.io/maven-central/v/com.squaredem/composecalendar.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.squaredem%22%20AND%20a:%22composecalendar%22)
+
 # ComposeCalendar
 
 This library provides a beautiful date picker for Jetpack Compose, following the latest material 3 guidelines.
 
-<img src="docs/screenshots/daymonth.png" width="200" />
-<img src="docs/screenshots/year.png" width="200" />
+<img src="docs/screenshots/daymonth.png" width="40%" />
+<img src="docs/screenshots/year.png" width="40%" />
 
 ## Dependency
 
