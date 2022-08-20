@@ -7,6 +7,10 @@ This library provides a beautiful date picker for Jetpack Compose, following the
 <img src="docs/screenshots/daymonth.png" width="40%" />
 <img src="docs/screenshots/year.png" width="40%" />
 
+## SDK Version
+
+The minimum supported sdk version is **23**
+
 ## Dependency
 
 Make sure to add Maven Central to your repositories declarations:
@@ -21,7 +25,7 @@ then add the latest ComposeCalendar version to your `app/build.gradle` file depe
 
 ```groovy
 dependencies {
-    implementation 'com.squaredem:composecalendar:1.0.0'
+    implementation 'com.squaredem:composecalendar:1.0.1'
 }
 ```
 
