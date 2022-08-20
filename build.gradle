@@ -1,5 +1,10 @@
 buildscript {
     ext {
+        versionMajor = 1
+        versionMinor = 0
+        versionPatch = 1
+        versionStringFull = "$versionMajor.$versionMinor$versionPatch"
+
         compose_compiler_version = '1.2.0'
         compose_version = '1.3.0-alpha01'
         material3_version = '1.0.0-alpha14'
