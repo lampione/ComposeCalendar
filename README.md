@@ -1,5 +1,3 @@
-[![Maven Central](https://img.shields.io/maven-central/v/com.squaredem/composecalendar.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.squaredem%22%20AND%20a:%22composecalendar%22)
-
 # ComposeCalendar
 
 This library provides a beautiful date picker for Jetpack Compose, following the latest material 3 guidelines.
@@ -21,7 +19,7 @@ then add the latest ComposeCalendar version to your `app/build.gradle` file depe
 
 ```groovy
 dependencies {
-    implementation 'com.squaredem:composecalendar:1.0.1'
+    implementation 'com.squaredem:composecalendar:1.0.2'
 }
 ```
 
