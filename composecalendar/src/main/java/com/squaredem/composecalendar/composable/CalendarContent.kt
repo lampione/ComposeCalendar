@@ -65,6 +65,7 @@ internal fun CalendarContent(
     LogCompositions("CalendarContent")
 
     val dateRange = getDateRange(minDate, maxDate)
+    val dateRangeByYear = dateRange.step(DateRangeStep.Year(1))
     val totalPageCount = dateRange.count()
     val initialPage = getStartPage(startDate, dateRange, totalPageCount)
 
@@ -74,7 +75,9 @@ internal fun CalendarContent(
 
     val pagerState = rememberPagerState(initialPage)
     val coroutineScope = rememberCoroutineScope()
-    val gridState = rememberLazyGridState()
+    val gridState = with(dateRangeByYear.indexOfFirst { it.year == selectedDate.value.year }) {
+        rememberLazyGridState(initialFirstVisibleItemIndex = this)
+    }
 
     val setSelectedDate: (LocalDate) -> Unit = {
         onSelected(it)
@@ -158,36 +161,22 @@ internal fun CalendarContent(
 
         } else {
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                state = gridState,
-                horizontalArrangement = Arrangement.spacedBy(
-                    space = 4.dp,
-                    alignment = Alignment.CenterHorizontally
-                ),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                dateRange.step(DateRangeStep.Year(1)).forEach {
-                    item {
-                        CalendarYear(
-                            year = it.year,
-                            isSelectedYear = it.year == selectedDate.value.year,
-                            isCurrentYear = it.year == startDate.year,
-                            setSelectedYear = { year ->
-                                coroutineScope.launch {
-                                    val newPage = dateRange.indexOfFirst {
-                                        it.year == year && it.month == selectedDate.value.month
-                                    }
-                                    pagerState.scrollToPage(newPage)
-                                }
-                                selectedDate.value = selectedDate.value.withYear(year)
-                                currentPagerDate.value = currentPagerDate.value.withYear(year)
-                                isPickingYear.value = false
-                            }
-                        )
+            CalendarYearGrid(
+                gridState = gridState,
+                dateRangeByYear = dateRangeByYear,
+                selectedYear = selectedDate.value.year,
+                currentYear = startDate.year,
+                onYearSelected = { year ->
+                    coroutineScope.launch {
+                        val newPage = dateRange.indexOfFirst {
+                            it.year == year && it.month == selectedDate.value.month
+                        }
+                        pagerState.scrollToPage(newPage)
                     }
+                    currentPagerDate.value = currentPagerDate.value.withYear(year)
+                    isPickingYear.value = false
                 }
-            }
+            )
 
         }
     }
