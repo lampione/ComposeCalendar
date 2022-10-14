@@ -19,7 +19,7 @@ then add the latest ComposeCalendar version to your `app/build.gradle` file depe
 
 ```groovy
 dependencies {
-    implementation 'com.squaredem:composecalendar:1.0.2'
+    implementation 'com.squaredem:composecalendar:1.0.3'
 }
 ```
 
