@@ -16,12 +16,11 @@
 
 package com.squaredem.composecalendar.composable
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
@@ -50,7 +48,6 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
 import kotlin.math.abs
-import kotlin.math.absoluteValue
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -70,7 +67,10 @@ internal fun CalendarContent(
     val initialPage = getStartPage(startDate, dateRange, totalPageCount)
 
     val isPickingYear = remember { mutableStateOf(false) }
+
+    // for display only, used in CalendarMonthYearSelector
     val currentPagerDate = remember { mutableStateOf(startDate.withDayOfMonth(1)) }
+
     val selectedDate = remember { mutableStateOf(startDate) }
 
     val pagerState = rememberPagerState(initialPage)
@@ -87,17 +87,8 @@ internal fun CalendarContent(
     if (!LocalInspectionMode.current) {
         LaunchedEffect(pagerState) {
             snapshotFlow { pagerState.targetPage }.collect { page ->
-                val pageDiff = page.minus(initialPage).absoluteValue.toLong()
-
-                val date = if (page > initialPage) {
-                    startDate.plusMonths(pageDiff)
-                } else if (page < initialPage) {
-                    startDate.minusMonths(pageDiff)
-                } else {
-                    startDate
-                }
-
-                currentPagerDate.value = date
+                val currentDate = getDateFromCurrentPage(page, dateRange)
+                currentPagerDate.value = currentDate
             }
         }
     }
@@ -109,12 +100,27 @@ internal fun CalendarContent(
         CalendarTopBar(selectedDate.value)
 
         CalendarMonthYearSelector(
-            coroutineScope,
-            pagerState,
-            currentPagerDate.value
-        ) {
-            isPickingYear.value = !isPickingYear.value
-        }
+            currentPagerDate.value,
+            onChipClicked = { isPickingYear.value = !isPickingYear.value },
+            onNextMonth = {
+                coroutineScope.launch {
+                    try {
+                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                    } catch (e: Exception) {
+                        // avoid IndexOutOfBounds and animation crashes
+                    }
+                }
+            },
+            onPreviousMonth = {
+                coroutineScope.launch {
+                    try {
+                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                    } catch (e: Exception) {
+                        // avoid IndexOutOfBounds and animation crashes
+                    }
+                }
+            }
+        )
 
         if (!isPickingYear.value) {
 
@@ -139,24 +145,18 @@ internal fun CalendarContent(
                 count = totalPageCount,
                 state = pagerState
             ) { page ->
-                val pageDiff = page.minus(initialPage).absoluteValue.toLong()
+                val currentDate = getDateFromCurrentPage(page, dateRange)
 
-                val date = if (page > initialPage) {
-                    startDate.plusMonths(pageDiff)
-                } else if (page < initialPage) {
-                    startDate.minusMonths(pageDiff)
-                } else {
-                    startDate
+                currentDate?.let {
+                    // grid
+                    CalendarGrid(
+                        it.withDayOfMonth(1),
+                        dateRange,
+                        selectedDate.value,
+                        setSelectedDate,
+                        true
+                    )
                 }
-
-                // grid
-                CalendarGrid(
-                    date.withDayOfMonth(1),
-                    dateRange,
-                    selectedDate.value,
-                    setSelectedDate,
-                    true
-                )
             }
 
         } else {
@@ -215,6 +215,17 @@ private fun getDateRange(min: LocalDate, max: LocalDate): DateRange {
         }
     }
     return lowerBound.rangeTo(upperBound) step DateRangeStep.Month()
+}
+
+private fun getDateFromCurrentPage(
+    currentPage: Int,
+    dateRange: DateRange,
+): LocalDate? {
+    return try {
+        dateRange.elementAt(currentPage)
+    } catch (e: Exception) {
+        null
+    }
 }
 
 @Preview(showBackground = true)
