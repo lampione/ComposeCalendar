@@ -31,23 +31,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 import com.squaredem.composecalendar.utils.LogCompositions
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.OffsetTime
 import java.util.*
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CalendarMonthYearSelector(
-    coroutineScope: CoroutineScope,
-    pagerState: PagerState,
     pagerDate: LocalDate,
-    onChipClicked: () -> Unit
+    onChipClicked: () -> Unit,
+    onNextMonth: () -> Unit,
+    onPreviousMonth: () -> Unit,
 ) {
     LogCompositions("CalendarMonthYearSelector")
 
@@ -73,39 +69,11 @@ internal fun CalendarMonthYearSelector(
             onClick = onChipClicked,
         )
         Spacer(modifier = Modifier.weight(1F))
-        IconButton(
-            onClick = {
-                coroutineScope.launch {
-                    with(pagerState) {
-                        try {
-                            animateScrollToPage(currentPage - 1)
-                        } catch (e: Exception) {
-                            // avoid IOOB and animation crashes
-                        }
-                    }
-                }
-            }
-        ) {
-            Icon(
-                Icons.Default.ChevronLeft, "ChevronLeft"
-            )
+        IconButton(onClick = onPreviousMonth) {
+            Icon(Icons.Default.ChevronLeft, "ChevronLeft")
         }
-        IconButton(
-            onClick = {
-                coroutineScope.launch {
-                    with(pagerState) {
-                        try {
-                            animateScrollToPage(currentPage + 1)
-                        } catch (e: Exception) {
-                            // avoid IOOB and animation crashes
-                        }
-                    }
-                }
-            }
-        ) {
-            Icon(
-                Icons.Default.ChevronRight, "ChevronRight",
-            )
+        IconButton(onClick = onNextMonth) {
+            Icon(Icons.Default.ChevronRight, "ChevronRight")
         }
     }
 }
