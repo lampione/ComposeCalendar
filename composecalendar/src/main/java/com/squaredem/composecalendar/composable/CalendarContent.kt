@@ -16,7 +16,6 @@
 
 package com.squaredem.composecalendar.composable
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -86,7 +85,7 @@ internal fun CalendarContent(
 
     if (!LocalInspectionMode.current) {
         LaunchedEffect(pagerState) {
-            snapshotFlow { pagerState.targetPage }.collect { page ->
+            snapshotFlow { pagerState.currentPage }.collect { page ->
                 val currentDate = getDateFromCurrentPage(page, dateRange)
                 currentPagerDate.value = currentDate
             }
@@ -105,7 +104,8 @@ internal fun CalendarContent(
             onNextMonth = {
                 coroutineScope.launch {
                     try {
-                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        val newPage = pagerState.currentPage + 1
+                        pagerState.animateScrollToPage(newPage)
                     } catch (e: Exception) {
                         // avoid IndexOutOfBounds and animation crashes
                     }
@@ -114,7 +114,8 @@ internal fun CalendarContent(
             onPreviousMonth = {
                 coroutineScope.launch {
                     try {
-                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                        val newPage = pagerState.currentPage - 1
+                        pagerState.animateScrollToPage(newPage)
                     } catch (e: Exception) {
                         // avoid IndexOutOfBounds and animation crashes
                     }
@@ -129,12 +130,8 @@ internal fun CalendarContent(
             ) {
                 DayOfWeek.values().forEach {
                     Text(
-                        modifier = Modifier
-                            .weight(1f),
-                        text = it.getDisplayName(
-                            TextStyle.NARROW,
-                            Locale.getDefault()
-                        ),
+                        modifier = Modifier.weight(1f),
+                        text = it.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -146,7 +143,6 @@ internal fun CalendarContent(
                 state = pagerState
             ) { page ->
                 val currentDate = getDateFromCurrentPage(page, dateRange)
-
                 currentDate?.let {
                     // grid
                     CalendarGrid(
@@ -193,7 +189,9 @@ private fun getStartPage(
     if (startDate >= dateRange.endInclusive) {
         return pageCount
     }
-    val indexOfRange = dateRange.indexOf(startDate.withDayOfMonth(1))
+    val indexOfRange = dateRange.indexOfFirst {
+        it.year == startDate.year && it.monthValue == startDate.monthValue
+    }
     return if (indexOfRange != -1) indexOfRange else pageCount / 2
 }
 

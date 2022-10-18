@@ -31,10 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.PagerState
 import com.squaredem.composecalendar.utils.LogCompositions
-import kotlinx.coroutines.CoroutineScope
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.OffsetTime
@@ -46,7 +43,7 @@ internal fun CalendarMonthYearSelector(
     pagerDate: LocalDate,
     onChipClicked: () -> Unit,
     onNextMonth: () -> Unit,
-    onPreviousMonth: () -> Unit
+    onPreviousMonth: () -> Unit,
 ) {
     LogCompositions("CalendarMonthYearSelector")
 
