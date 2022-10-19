@@ -3,9 +3,11 @@ package com.squaredem.composecalendardemo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -17,8 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.squaredem.composecalendar.ComposeCalendar
+import com.squaredem.composecalendar.composable.CalendarContent
+import com.squaredem.composecalendar.composable.CalendarContentConfig
 import com.squaredem.composecalendardemo.ui.theme.ComposeCalendarDemoTheme
 import java.time.LocalDate
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +49,7 @@ private fun MainActivityContent() {
         contentAlignment = Alignment.Center
     ) {
 
-        val showDialog = rememberSaveable { mutableStateOf(false) }
+        var calendarMode: CalendarMode by rememberSaveable { mutableStateOf(CalendarMode.Hidden) }
         val selectedDateMillis = rememberSaveable { mutableStateOf<LocalDate?>(null) }
 
         Column(
@@ -54,24 +60,56 @@ private fun MainActivityContent() {
                 Text(text = it.toString())
             }
 
-            Button(onClick = { showDialog.value = true }) {
-                Text("Show dialog")
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Button(onClick = { calendarMode = CalendarMode.Popup }) {
+                    Text("Show dialog")
+                }
+
+                Button(onClick = { calendarMode = CalendarMode.InPlace }) {
+                    Text("Show in-place")
+                }
+            }
+
+            AnimatedVisibility(
+                visible = calendarMode == CalendarMode.InPlace,
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    CalendarContent(
+                        startDate = LocalDate.now(),
+                        minDate = LocalDate.now(),
+                        maxDate = LocalDate.MAX,
+                        onSelected = {
+                            selectedDateMillis.value = it
+                            calendarMode = CalendarMode.Hidden
+                        },
+                        contentConfig = CalendarContentConfig(
+                            showSelectedDateTitle = false,
+                        )
+                    )
+                    
+                    Button(onClick = { calendarMode = CalendarMode.Hidden }) {
+                        Text(text = "Dismiss")
+                    }
+                }
             }
         }
 
-        if (showDialog.value) {
+        if (calendarMode == CalendarMode.Popup) {
             ComposeCalendar(
                 startDate = LocalDate.now(),
                 minDate = LocalDate.now(),
                 maxDate = LocalDate.MAX,
-                onDone = { it: LocalDate ->
+                onDone = {
                     selectedDateMillis.value = it
-                    showDialog.value = false
+                    calendarMode = CalendarMode.Hidden
                 },
-                onDismiss = { showDialog.value = false }
+                onDismiss = { calendarMode = CalendarMode.Hidden }
             )
         }
-
     }
 }
 
@@ -81,4 +119,10 @@ private fun DefaultPreview() {
     ComposeCalendarDemoTheme {
         MainActivityContent()
     }
+}
+
+enum class CalendarMode {
+    Hidden,
+    Popup,
+    InPlace,
 }
