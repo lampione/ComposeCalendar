@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,12 +53,13 @@ import kotlin.math.floor
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-internal fun CalendarContent(
 fun CalendarContent(
     startDate: LocalDate,
     minDate: LocalDate,
     maxDate: LocalDate,
     onSelected: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier,
+    contentConfig: CalendarContentConfig = CalendarDefaults.contentConfig,
 ) {
     LogCompositions("CalendarContent")
 
@@ -94,10 +96,14 @@ fun CalendarContent(
     }
 
     Column(
-        modifier = Modifier.wrapContentHeight(),
+        modifier = Modifier
+            .wrapContentHeight()
+            .then(modifier),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        CalendarTopBar(selectedDate.value)
+        if (contentConfig.showSelectedDateTitle) {
+            CalendarTopBar(selectedDate.value)
+        }
 
         CalendarMonthYearSelector(
             currentPagerDate.value,
@@ -125,7 +131,6 @@ fun CalendarContent(
         )
 
         if (!isPickingYear.value) {
-
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
@@ -157,7 +162,6 @@ fun CalendarContent(
             }
 
         } else {
-
             CalendarYearGrid(
                 gridState = gridState,
                 dateRangeByYear = dateRangeByYear,
@@ -174,7 +178,6 @@ fun CalendarContent(
                     isPickingYear.value = false
                 }
             )
-
         }
     }
 }
@@ -237,3 +240,18 @@ private fun Preview() {
         onSelected = {},
     )
 }
+
+object CalendarDefaults {
+    val contentConfig: CalendarContentConfig = CalendarContentConfig(
+        showSelectedDateTitle = true,
+    )
+}
+
+/**
+ * Configuration settings for [CalendarContent].
+ *
+ * @param showSelectedDateTitle should show title with the current date selection.
+ */
+data class CalendarContentConfig(
+    val showSelectedDateTitle: Boolean,
+)
