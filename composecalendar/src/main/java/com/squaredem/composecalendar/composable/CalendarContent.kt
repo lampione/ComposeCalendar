@@ -53,6 +53,7 @@ import kotlin.math.floor
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun CalendarContent(
+fun CalendarContent(
     startDate: LocalDate,
     minDate: LocalDate,
     maxDate: LocalDate,
