@@ -71,7 +71,7 @@ internal fun CalendarDay(
         else -> currentModifier
     }
 
-    if (date.isInDateRange || (date.isCurrentMonth && date.showCurrentMonthOnly)) {
+    if (date.isInDateRange) {
         currentModifier = currentModifier.clickable {
             onSelected(date.localDate)
         }
