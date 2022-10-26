@@ -34,4 +34,3 @@ internal inline fun LogCompositions(msg: String) {
         Log.d(SDK_TAG, "Compositions: $msg ${ref.value}")
     }
 }
-

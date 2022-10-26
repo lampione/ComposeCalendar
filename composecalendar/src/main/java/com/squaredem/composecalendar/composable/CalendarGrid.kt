@@ -70,7 +70,11 @@ internal fun CalendarGrid(
         horizontalArrangement = Arrangement.spacedBy(gridSpacing),
         verticalArrangement = Arrangement.spacedBy(gridSpacing),
     ) {
-        items(dates) {
+        items(
+            items = dates,
+            key = { it.localDate },
+            contentType = { "day" },
+        ) {
             CalendarDay(
                 date = it,
                 onSelected = onSelected
