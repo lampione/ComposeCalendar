@@ -50,13 +50,13 @@ private fun MainActivityContent() {
     ) {
 
         var calendarMode: CalendarMode by rememberSaveable { mutableStateOf(CalendarMode.Hidden) }
-        val selectedDateMillis = rememberSaveable { mutableStateOf<LocalDate?>(null) }
+        val selectedDate = rememberSaveable { mutableStateOf<LocalDate?>(null) }
 
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            selectedDateMillis.value?.let {
+            selectedDate.value?.let {
                 Text(text = it.toString())
             }
 
@@ -79,11 +79,11 @@ private fun MainActivityContent() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     CalendarContent(
-                        startDate = LocalDate.now(),
-                        minDate = LocalDate.now(),
+                        startDate = selectedDate.value ?: LocalDate.now(),
+                        minDate = LocalDate.now().minusMonths(2),
                         maxDate = LocalDate.MAX,
                         onSelected = {
-                            selectedDateMillis.value = it
+                            selectedDate.value = it
                             calendarMode = CalendarMode.Hidden
                         },
                         contentConfig = CalendarContentConfig(
@@ -100,11 +100,11 @@ private fun MainActivityContent() {
 
         if (calendarMode == CalendarMode.Popup) {
             ComposeCalendar(
-                startDate = LocalDate.now(),
-                minDate = LocalDate.now(),
-                maxDate = LocalDate.MAX,
+                startDate = selectedDate.value ?: LocalDate.now(),
+                minDate = LocalDate.of(2019, 1, 1),
+                maxDate = LocalDate.now(),
                 onDone = {
-                    selectedDateMillis.value = it
+                    selectedDate.value = it
                     calendarMode = CalendarMode.Hidden
                 },
                 onDismiss = { calendarMode = CalendarMode.Hidden }
