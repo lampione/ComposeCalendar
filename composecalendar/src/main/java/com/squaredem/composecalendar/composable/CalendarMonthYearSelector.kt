@@ -16,6 +16,9 @@
 
 package com.squaredem.composecalendar.composable
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -44,13 +47,19 @@ internal fun CalendarMonthYearSelector(
     onChipClicked: () -> Unit,
     onNextMonth: () -> Unit,
     onPreviousMonth: () -> Unit,
+    modifier: Modifier = Modifier,
+    isNextMonthEnabled: Boolean = true,
+    isPreviousMonthEnabled: Boolean = true,
+    isMonthSelectorVisible: Boolean = true,
 ) {
     LogCompositions("CalendarMonthYearSelector")
 
     val pagerMonthFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
         verticalAlignment = Alignment.CenterVertically
     ) {
         FilterChip(
@@ -69,11 +78,25 @@ internal fun CalendarMonthYearSelector(
             onClick = onChipClicked,
         )
         Spacer(modifier = Modifier.weight(1F))
-        IconButton(onClick = onPreviousMonth) {
-            Icon(Icons.Default.ChevronLeft, "ChevronLeft")
-        }
-        IconButton(onClick = onNextMonth) {
-            Icon(Icons.Default.ChevronRight, "ChevronRight")
+        AnimatedVisibility(
+            visible = isMonthSelectorVisible,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            Row {
+                IconButton(
+                    onClick = onPreviousMonth,
+                    enabled = isPreviousMonthEnabled,
+                ) {
+                    Icon(Icons.Default.ChevronLeft, "ChevronLeft")
+                }
+                IconButton(
+                    onClick = onNextMonth,
+                    enabled = isNextMonthEnabled,
+                ) {
+                    Icon(Icons.Default.ChevronRight, "ChevronRight")
+                }
+            }
         }
     }
 }
