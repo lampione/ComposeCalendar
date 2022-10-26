@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -20,11 +21,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.squaredem.composecalendar.ComposeCalendar
 import com.squaredem.composecalendar.composable.CalendarContent
-import com.squaredem.composecalendar.composable.CalendarContentConfig
 import com.squaredem.composecalendardemo.ui.theme.ComposeCalendarDemoTheme
 import java.time.LocalDate
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.squaredem.composecalendar.composable.CalendarDefaults
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,8 +87,11 @@ private fun MainActivityContent() {
                             selectedDate.value = it
                             calendarMode = CalendarMode.Hidden
                         },
-                        contentConfig = CalendarContentConfig(
+                        contentConfig = CalendarDefaults.defaultContentConfig(
                             showSelectedDateTitle = false,
+                        ),
+                        calendarColors = CalendarDefaults.defaultColors(
+                            monthChevronColor = MaterialTheme.colorScheme.primary
                         )
                     )
                     

@@ -30,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -51,6 +52,7 @@ internal fun CalendarMonthYearSelector(
     isNextMonthEnabled: Boolean = true,
     isPreviousMonthEnabled: Boolean = true,
     isMonthSelectorVisible: Boolean = true,
+    calendarColors: CalendarColors,
 ) {
     LogCompositions("CalendarMonthYearSelector")
 
@@ -87,12 +89,18 @@ internal fun CalendarMonthYearSelector(
                 IconButton(
                     onClick = onPreviousMonth,
                     enabled = isPreviousMonthEnabled,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = calendarColors.monthChevronColor
+                    )
                 ) {
                     Icon(Icons.Default.ChevronLeft, "ChevronLeft")
                 }
                 IconButton(
                     onClick = onNextMonth,
                     enabled = isNextMonthEnabled,
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = calendarColors.monthChevronColor
+                    )
                 ) {
                     Icon(Icons.Default.ChevronRight, "ChevronRight")
                 }

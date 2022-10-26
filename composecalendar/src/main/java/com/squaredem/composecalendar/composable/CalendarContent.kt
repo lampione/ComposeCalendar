@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,7 +70,8 @@ fun CalendarContent(
     maxDate: LocalDate,
     onSelected: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
-    contentConfig: CalendarContentConfig = CalendarDefaults.contentConfig,
+    contentConfig: CalendarContentConfig = CalendarDefaults.defaultContentConfig(),
+    calendarColors: CalendarColors = CalendarDefaults.defaultColors(),
 ) {
     LogCompositions("CalendarContent")
 
@@ -156,6 +159,7 @@ fun CalendarContent(
             isNextMonthEnabled = pagerState.nextPage() != null,
             isPreviousMonthEnabled = pagerState.previousPage() != null,
             isMonthSelectorVisible = !isPickingYear.value,
+            calendarColors = calendarColors,
         )
 
         val minHeight = 375.dp
@@ -305,8 +309,17 @@ private fun Preview() {
 }
 
 object CalendarDefaults {
-    val contentConfig: CalendarContentConfig = CalendarContentConfig(
-        showSelectedDateTitle = true,
+    fun defaultContentConfig(
+        showSelectedDateTitle: Boolean = true,
+    ) = CalendarContentConfig(
+        showSelectedDateTitle = showSelectedDateTitle,
+    )
+
+    @Composable
+    fun defaultColors(
+        monthChevronColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    ) = CalendarColors(
+        monthChevronColor = monthChevronColor,
     )
 }
 
@@ -317,4 +330,8 @@ object CalendarDefaults {
  */
 data class CalendarContentConfig(
     val showSelectedDateTitle: Boolean,
+)
+
+data class CalendarColors(
+    val monthChevronColor: Color,
 )
