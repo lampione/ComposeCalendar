@@ -17,20 +17,22 @@
 package com.squaredem.composecalendar.utils
 
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.remember
 import com.squaredem.composecalendar.BuildConfig
+import kotlinx.coroutines.CancellationException
 
-class Ref(var value: Int)
+fun Throwable.isCancelledCoroutine() = this is CancellationException
 
-internal const val SDK_TAG = "ComposeCalendar"
+fun Throwable.customLog(message: String, verbose: Boolean = false) {
+    if (!isCancelledCoroutine() && BuildConfig.DEBUG) {
+        printStackTrace()
+    }
+    if (verbose || !isCancelledCoroutine()) {
+        logDebugWarning(message)
+    }
+}
 
-@Composable
-internal inline fun LogCompositions(msg: String) {
+internal fun logDebugWarning(message: String) {
     if (BuildConfig.DEBUG) {
-        val ref = remember { Ref(0) }
-        SideEffect { ref.value++ }
-        Log.d(SDK_TAG, "Compositions: $msg ${ref.value}")
+        Log.w(SDK_TAG, message)
     }
 }

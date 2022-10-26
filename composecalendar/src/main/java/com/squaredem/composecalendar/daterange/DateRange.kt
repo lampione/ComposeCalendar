@@ -26,7 +26,11 @@ internal class DateIterator(
 
     private var currentDate = startDate
 
-    override fun hasNext(): Boolean = currentDate <= endDateInclusive
+    override fun hasNext(): Boolean = when (step) {
+        is DateRangeStep.Day -> currentDate <= endDateInclusive
+        is DateRangeStep.Month -> currentDate.atFirstDay() <= endDateInclusive.atFirstDay()
+        is DateRangeStep.Year -> currentDate.year <= endDateInclusive.year
+    }
 
     override fun next(): LocalDate {
         val next = currentDate
@@ -61,3 +65,5 @@ internal sealed class DateRangeStep(val value: Int) {
 }
 
 internal operator fun LocalDate.rangeTo(other: LocalDate) = DateRange(this, other)
+
+internal fun LocalDate.atFirstDay() = LocalDate.of(year, month, 1)

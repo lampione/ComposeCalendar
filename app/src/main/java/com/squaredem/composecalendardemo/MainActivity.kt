@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -20,11 +21,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.squaredem.composecalendar.ComposeCalendar
 import com.squaredem.composecalendar.composable.CalendarContent
-import com.squaredem.composecalendar.composable.CalendarContentConfig
 import com.squaredem.composecalendardemo.ui.theme.ComposeCalendarDemoTheme
 import java.time.LocalDate
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.squaredem.composecalendar.composable.CalendarDefaults
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,13 +51,13 @@ private fun MainActivityContent() {
     ) {
 
         var calendarMode: CalendarMode by rememberSaveable { mutableStateOf(CalendarMode.Hidden) }
-        val selectedDateMillis = rememberSaveable { mutableStateOf<LocalDate?>(null) }
+        val selectedDate = rememberSaveable { mutableStateOf<LocalDate?>(null) }
 
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            selectedDateMillis.value?.let {
+            selectedDate.value?.let {
                 Text(text = it.toString())
             }
 
@@ -79,15 +80,18 @@ private fun MainActivityContent() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     CalendarContent(
-                        startDate = LocalDate.now(),
-                        minDate = LocalDate.now(),
+                        startDate = selectedDate.value ?: LocalDate.now(),
+                        minDate = LocalDate.now().minusMonths(2),
                         maxDate = LocalDate.MAX,
                         onSelected = {
-                            selectedDateMillis.value = it
+                            selectedDate.value = it
                             calendarMode = CalendarMode.Hidden
                         },
-                        contentConfig = CalendarContentConfig(
+                        contentConfig = CalendarDefaults.defaultContentConfig(
                             showSelectedDateTitle = false,
+                        ),
+                        calendarColors = CalendarDefaults.defaultColors(
+                            monthChevronColor = MaterialTheme.colorScheme.primary
                         )
                     )
                     
@@ -100,11 +104,11 @@ private fun MainActivityContent() {
 
         if (calendarMode == CalendarMode.Popup) {
             ComposeCalendar(
-                startDate = LocalDate.now(),
-                minDate = LocalDate.now(),
-                maxDate = LocalDate.MAX,
+                startDate = selectedDate.value ?: LocalDate.now(),
+                minDate = LocalDate.of(2019, 1, 1),
+                maxDate = LocalDate.now(),
                 onDone = {
-                    selectedDateMillis.value = it
+                    selectedDate.value = it
                     calendarMode = CalendarMode.Hidden
                 },
                 onDismiss = { calendarMode = CalendarMode.Hidden }

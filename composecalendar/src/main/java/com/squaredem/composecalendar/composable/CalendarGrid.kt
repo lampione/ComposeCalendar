@@ -56,26 +56,29 @@ internal fun CalendarGrid(
         val isInDateRange = it in dateRange
 
         DateWrapper(
-            it,
-            isSelectedDay,
-            isCurrentDay,
-            isCurrentMonth,
-            isInDateRange,
-            showCurrentMonthOnly
+            localDate = it,
+            isSelectedDay = isSelectedDay,
+            isCurrentDay = isCurrentDay,
+            isCurrentMonth = isCurrentMonth,
+            isInDateRange = isInDateRange,
+            showCurrentMonthOnly = showCurrentMonthOnly
         )
     }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
         horizontalArrangement = Arrangement.spacedBy(gridSpacing),
-        verticalArrangement = Arrangement.spacedBy(gridSpacing)
+        verticalArrangement = Arrangement.spacedBy(gridSpacing),
     ) {
-        items(dates) {
+        items(
+            items = dates,
+            key = { it.localDate },
+            contentType = { "day" },
+        ) {
             CalendarDay(
                 date = it,
                 onSelected = onSelected
             )
         }
     }
-
 }
