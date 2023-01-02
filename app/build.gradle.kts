@@ -23,19 +23,37 @@ android {
 
 kotlin {
     android()
+    jvm()
 
     sourceSets {
-        val androidMain by getting {
+        val commonMain by getting {
             dependencies {
-                implementation(AndroidX.core.ktx)
+                implementation(project(":composecalendar"))
                 implementation(compose.ui)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.material3)
+            }
+        }
+        val androidMain by getting {
+            dependencies {
+                implementation(AndroidX.core.ktx)
                 implementation(compose.preview)
                 implementation(AndroidX.lifecycle.runtime.ktx)
                 implementation(AndroidX.activity.compose)
-                implementation(project(":composecalendar"))
             }
+        }
+        val jvmMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
+            }
+        }
+    }
+}
+
+compose {
+    desktop {
+        application {
+            mainClass = "com.squaredem.composecalendardemo.MainKt"
         }
     }
 }
