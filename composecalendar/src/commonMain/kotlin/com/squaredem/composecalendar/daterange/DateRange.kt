@@ -16,7 +16,9 @@
 
 package com.squaredem.composecalendar.daterange
 
-import java.time.LocalDate
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 
 internal class DateIterator(
     startDate: LocalDate,
@@ -35,11 +37,13 @@ internal class DateIterator(
     }
 
     private fun getNextStep(): LocalDate {
-        return when (step) {
-            is DateRangeStep.Day -> currentDate.plusDays(step.value.toLong())
-            is DateRangeStep.Month -> currentDate.plusMonths(step.value.toLong())
-            is DateRangeStep.Year -> currentDate.plusYears(step.value.toLong())
+        val dateUnit = when (step) {
+            is DateRangeStep.Day -> DateTimeUnit.DAY
+            is DateRangeStep.Month -> DateTimeUnit.MONTH
+            is DateRangeStep.Year -> DateTimeUnit.YEAR
         }
+
+        return currentDate.plus(step.value, dateUnit)
     }
 }
 

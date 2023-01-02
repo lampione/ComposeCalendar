@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.squaredem.composecalendar.ComposeCalendar
 import com.squaredem.composecalendardemo.ui.theme.ComposeCalendarDemoTheme
-import java.time.LocalDate
+import kotlinx.datetime.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,10 +60,11 @@ private fun MainActivityContent() {
         }
 
         if (showDialog.value) {
+            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
             ComposeCalendar(
-                startDate = LocalDate.now(),
-                minDate = LocalDate.now(),
-                maxDate = LocalDate.MAX,
+                startDate = today,
+                minDate = today,
+                maxDate = today.plus(100, DateTimeUnit.YEAR),
                 onDone = { it: LocalDate ->
                     selectedDateMillis.value = it
                     showDialog.value = false

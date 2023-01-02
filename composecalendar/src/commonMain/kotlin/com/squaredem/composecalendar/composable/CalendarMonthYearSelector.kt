@@ -23,19 +23,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.squaredem.composecalendar.utils.LogCompositions
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.OffsetTime
-import java.util.*
+import com.squaredem.composecalendar.utils.monthYearFormat
+import kotlinx.datetime.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,8 +41,6 @@ internal fun CalendarMonthYearSelector(
 ) {
     LogCompositions("CalendarMonthYearSelector")
 
-    val pagerMonthFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
-
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -56,9 +48,7 @@ internal fun CalendarMonthYearSelector(
         FilterChip(
             label = {
                 Text(
-                    pagerMonthFormat.format(
-                        Date.from(pagerDate.atTime(OffsetTime.now()).toInstant())
-                    )
+                    pagerDate.monthYearFormat()
                 )
             },
             selected = false,

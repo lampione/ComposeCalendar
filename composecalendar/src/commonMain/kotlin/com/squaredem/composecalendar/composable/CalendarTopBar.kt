@@ -25,10 +25,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.squaredem.composecalendar.utils.LogCompositions
-import java.text.DateFormat
-import java.time.LocalDate
-import java.time.OffsetTime
-import java.util.*
+import com.squaredem.composecalendar.utils.defaultFormat
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun CalendarTopBar(selectedDate: LocalDate) {
@@ -39,11 +37,8 @@ internal fun CalendarTopBar(selectedDate: LocalDate) {
     ) {
         LogCompositions("CalendarTopBar")
 
-        val dateFormatter = DateFormat.getDateInstance(DateFormat.DEFAULT)
         Text(
-            text = dateFormatter.format(
-                Date.from(selectedDate.atTime(OffsetTime.now()).toInstant())
-            ),
+            text = selectedDate.defaultFormat(),
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onPrimaryContainer
         )

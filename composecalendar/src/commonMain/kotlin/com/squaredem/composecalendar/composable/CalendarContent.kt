@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -41,11 +40,12 @@ import com.squaredem.composecalendar.daterange.DateRange
 import com.squaredem.composecalendar.daterange.DateRangeStep
 import com.squaredem.composecalendar.daterange.rangeTo
 import com.squaredem.composecalendar.utils.LogCompositions
+import com.squaredem.composecalendar.utils.getDisplayName
+import com.squaredem.composecalendar.utils.withDayOfMonth
+import com.squaredem.composecalendar.utils.withYear
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.*
+import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -60,7 +60,7 @@ internal fun CalendarContent(
 ) {
     LogCompositions("CalendarContent")
 
-    val dateRange = getDateRange(minDate, maxDate)
+    val dateRange = DateRange(minDate, maxDate, DateRangeStep.Month())
     val dateRangeByYear = dateRange.step(DateRangeStep.Year(1))
     val totalPageCount = dateRange.count()
     val initialPage = getStartPage(startDate, dateRange, totalPageCount)
@@ -68,7 +68,7 @@ internal fun CalendarContent(
     val isPickingYear = remember { mutableStateOf(false) }
 
     // for display only, used in CalendarMonthYearSelector
-    val currentPagerDate = remember { mutableStateOf(startDate.withDayOfMonth(1)) }
+    val currentPagerDate = remember { mutableStateOf(startDate) }
 
     val selectedDate = remember { mutableStateOf(startDate) }
 
@@ -87,7 +87,7 @@ internal fun CalendarContent(
         LaunchedEffect(pagerState) {
             snapshotFlow { pagerState.currentPage }.collect { page ->
                 val currentDate = getDateFromCurrentPage(page, dateRange)
-                currentPagerDate.value = currentDate
+                currentDate?.let { currentPagerDate.value = it }
             }
         }
     }
@@ -131,7 +131,7 @@ internal fun CalendarContent(
                 DayOfWeek.values().forEach {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = it.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
+                        text = it.getDisplayName(),
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -190,29 +190,9 @@ private fun getStartPage(
         return pageCount
     }
     val indexOfRange = dateRange.indexOfFirst {
-        it.year == startDate.year && it.monthValue == startDate.monthValue
+        it.year == startDate.year && it.monthNumber == startDate.monthNumber
     }
     return if (indexOfRange != -1) indexOfRange else pageCount / 2
-}
-
-private fun getDateRange(min: LocalDate, max: LocalDate): DateRange {
-    val lowerBound = with(min) {
-        val year = with(LocalDate.now().minusYears(100).year) {
-            100.0 * (floor(abs(this / 100.0)))
-        }
-        coerceAtLeast(
-            LocalDate.now().withYear(year.toInt()).withDayOfYear(1)
-        )
-    }
-    val upperBound = with(max) {
-        val year = with(LocalDate.now().year) {
-            100.0 * (ceil(abs(this / 100.0)))
-        }
-        coerceAtMost(LocalDate.now().withYear(year.toInt())).apply {
-            withDayOfYear(this.lengthOfYear())
-        }
-    }
-    return lowerBound.rangeTo(upperBound) step DateRangeStep.Month()
 }
 
 private fun getDateFromCurrentPage(
@@ -221,18 +201,18 @@ private fun getDateFromCurrentPage(
 ): LocalDate? {
     return try {
         dateRange.elementAt(currentPage)
-    } catch (e: Exception) {
+    } catch (e: Throwable) {
         null
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-private fun Preview() {
-    CalendarContent(
-        startDate = LocalDate.now(),
-        minDate = LocalDate.now(),
-        maxDate = LocalDate.MAX,
-        onSelected = {},
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//private fun Preview() {
+//    CalendarContent(
+//        startDate = LocalDate.now(),
+//        minDate = LocalDate.now(),
+//        maxDate = LocalDate.MAX,
+//        onSelected = {},
+//    )
+//}

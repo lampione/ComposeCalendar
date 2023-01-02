@@ -16,22 +16,25 @@
 
 package com.squaredem.composecalendar
 
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.res.stringResource
 import com.squaredem.composecalendar.composable.CalendarContent
-import java.time.LocalDate
-import java.time.OffsetTime
+import com.squaredem.composecalendar.utils.AlertDialog
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun ComposeCalendar(
-    startDate: LocalDate = LocalDate.now(),
-    minDate: LocalDate = LocalDate.MIN,
-    maxDate: LocalDate = LocalDate.MAX,
+    startDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+    minDate: LocalDate = LocalDate(1900, 1, 1),
+    maxDate: LocalDate = LocalDate(2100, 12, 31),
+    okText: String = "OK",
+    cancelText: String = "Cancel",
     onDone: (millis: LocalDate) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -43,12 +46,12 @@ fun ComposeCalendar(
             TextButton(onClick = {
                 onDone(selectedDate.value)
             }) {
-                Text(stringResource(id = android.R.string.ok))
+                Text(okText)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(id = android.R.string.cancel))
+                Text(cancelText)
             }
         },
         text = {

@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.squaredem.composecalendar.model.DateWrapper
 import com.squaredem.composecalendar.utils.LogCompositions
-import java.time.LocalDate
+import kotlinx.datetime.LocalDate
 
 @Composable
 internal fun CalendarDay(

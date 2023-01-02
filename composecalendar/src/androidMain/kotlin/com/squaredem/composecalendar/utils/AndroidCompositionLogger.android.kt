@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package com.squaredem.composecalendar.model
+package com.squaredem.composecalendar.utils
 
-import java.time.LocalDate
+import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.remember
+import com.squaredem.composecalendar.BuildConfig
 
-internal data class DateWrapper(
-    val localDate: LocalDate,
-    val isSelectedDay: Boolean,
-    val isCurrentDay: Boolean,
-    val isCurrentMonth: Boolean,
-    val isInDateRange: Boolean,
-    val showCurrentMonthOnly: Boolean
-)
+@Composable
+internal actual fun LogCompositions(msg: String) {
+    if (BuildConfig.DEBUG) {
+        val ref = remember { Ref(0) }
+        SideEffect { ref.value++ }
+        Log.d("ComposeCalendar", "Compositions: $msg ${ref.value}")
+    }
+}

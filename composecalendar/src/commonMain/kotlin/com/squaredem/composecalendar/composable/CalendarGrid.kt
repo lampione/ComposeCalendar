@@ -27,7 +27,7 @@ import com.squaredem.composecalendar.daterange.DateRangeStep
 import com.squaredem.composecalendar.daterange.rangeTo
 import com.squaredem.composecalendar.model.DateWrapper
 import com.squaredem.composecalendar.utils.LogCompositions
-import java.time.LocalDate
+import kotlinx.datetime.*
 
 @Composable
 internal fun CalendarGrid(
@@ -40,14 +40,14 @@ internal fun CalendarGrid(
     LogCompositions("CalendarGrid")
 
     val gridSpacing = 4.dp
-    val today = LocalDate.now()
+    val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
     val firstWeekDayOfMonth = pagerDate.dayOfWeek
     val pagerMonth = pagerDate.month
 
     val gridStartDay = pagerDate
-        .minusDays(firstWeekDayOfMonth.value.toLong() - 1)
-    val gridEndDay = gridStartDay.plusDays(41)
+        .minus(firstWeekDayOfMonth.value.toLong() - 1, DateTimeUnit.DAY)
+    val gridEndDay = gridStartDay.plus(41, DateTimeUnit.DAY)
 
     val dates = (gridStartDay.rangeTo(gridEndDay) step DateRangeStep.Day()).map {
         val isCurrentMonth = it.month == pagerMonth
