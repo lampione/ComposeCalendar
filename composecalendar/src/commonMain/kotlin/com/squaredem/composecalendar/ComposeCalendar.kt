@@ -16,13 +16,18 @@
 
 package com.squaredem.composecalendar
 
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import com.squaredem.composecalendar.composable.CalendarContent
-import com.squaredem.composecalendar.utils.AlertDialog
+import com.squaredem.composecalendar.composable.CalendarTopBar
+import com.squaredem.composecalendar.composable.TextButtons
+import com.squaredem.composecalendar.utils.CalendarDialog
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -30,39 +35,51 @@ import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun ComposeCalendar(
+    title: @Composable () -> Unit,
     startDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
     minDate: LocalDate = LocalDate(1900, 1, 1),
     maxDate: LocalDate = LocalDate(2100, 12, 31),
     okText: String = "OK",
     cancelText: String = "Cancel",
-    onDone: (millis: LocalDate) -> Unit,
+    onDone: (selectedDate: LocalDate) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val selectedDate = remember { mutableStateOf(startDate) }
+    var selectedDate by remember { mutableStateOf(startDate) }
 
-    AlertDialog(
+    CalendarDialog(
         onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = {
-                onDone(selectedDate.value)
-            }) {
-                Text(okText)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(cancelText)
-            }
-        },
-        text = {
-            CalendarContent(
-                startDate = startDate,
-                minDate = minDate,
-                maxDate = maxDate,
-                onSelected = {
-                    selectedDate.value = it
+        content = {
+            Surface(
+                modifier = Modifier.width(328.dp),
+                tonalElevation = 6.dp,
+                shape = MaterialTheme.shapes.extraLarge
+            ) {
+                Column(
+                    Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp, bottom = 12.dp)
+
+                ) {
+                    CalendarTopBar(
+                        title = title,
+                        selectedDate = selectedDate
+                    )
+
+                    CalendarContent(
+                        selectedDate = selectedDate,
+                        minDate = minDate,
+                        maxDate = maxDate,
+                        onSelected = {
+                            selectedDate = it
+                        }
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    TextButtons(
+                        onDone = { onDone(selectedDate) },
+                        okText = okText,
+                        onCancel = onDismiss,
+                        cancelText = cancelText,
+                    )
                 }
-            )
+            }
         }
     )
 }

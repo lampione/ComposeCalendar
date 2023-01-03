@@ -21,6 +21,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,15 +40,16 @@ import kotlinx.datetime.LocalDate
 @Composable
 internal fun CalendarDay(
     date: DateWrapper,
-    onSelected: (LocalDate) -> Unit
+    onSelected: (LocalDate) -> Unit,
+    showCurrentMonthOnly: Boolean,
 ) {
     LogCompositions("CalendarDay")
 
     var currentModifier = Modifier
-        .aspectRatio(1F)
+        .size(40.dp)
         .clip(CircleShape)
 
-    if (!date.isCurrentMonth && date.showCurrentMonthOnly) {
+    if (!date.isCurrentMonth && showCurrentMonthOnly) {
         Box(modifier = currentModifier)
         return
     }
@@ -71,7 +73,7 @@ internal fun CalendarDay(
         else -> currentModifier
     }
 
-    if (date.isInDateRange || (date.isCurrentMonth && date.showCurrentMonthOnly)) {
+    if (date.isInDateRange) {
         currentModifier = currentModifier.clickable {
             onSelected(date.localDate)
         }
@@ -87,10 +89,7 @@ internal fun CalendarDay(
         date.isCurrentDay -> {
             MaterialTheme.colorScheme.primary
         }
-        !date.isCurrentMonth -> {
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.6F)
-        }
-        else -> Color.Unspecified
+        else -> MaterialTheme.colorScheme.onSurface
     }
 
     val text = "${date.localDate.dayOfMonth}"
@@ -102,8 +101,7 @@ internal fun CalendarDay(
         Text(
             text = text,
             color = textColor,
-            textAlign = TextAlign.Center,
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.bodySmall,
         )
     }
 }

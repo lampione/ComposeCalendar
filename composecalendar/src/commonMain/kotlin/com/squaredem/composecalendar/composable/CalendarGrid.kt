@@ -17,10 +17,12 @@
 package com.squaredem.composecalendar.composable
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.squaredem.composecalendar.daterange.DateRange
 import com.squaredem.composecalendar.daterange.DateRangeStep
@@ -35,11 +37,10 @@ internal fun CalendarGrid(
     dateRange: DateRange,
     selectedDate: LocalDate,
     onSelected: (LocalDate) -> Unit,
-    showCurrentMonthOnly: Boolean
+    showCurrentMonthOnly: Boolean,
 ) {
     LogCompositions("CalendarGrid")
 
-    val gridSpacing = 4.dp
     val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
 
     val firstWeekDayOfMonth = pagerDate.dayOfWeek
@@ -61,19 +62,20 @@ internal fun CalendarGrid(
             isCurrentDay,
             isCurrentMonth,
             isInDateRange,
-            showCurrentMonthOnly
         )
     }
 
     LazyVerticalGrid(
+        modifier = Modifier.fillMaxWidth(),
         columns = GridCells.Fixed(7),
-        horizontalArrangement = Arrangement.spacedBy(gridSpacing),
-        verticalArrangement = Arrangement.spacedBy(gridSpacing)
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         items(dates) {
             CalendarDay(
                 date = it,
-                onSelected = onSelected
+                onSelected = onSelected,
+                showCurrentMonthOnly = showCurrentMonthOnly,
             )
         }
     }

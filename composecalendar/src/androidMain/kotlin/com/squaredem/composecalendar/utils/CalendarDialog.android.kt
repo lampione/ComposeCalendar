@@ -17,18 +17,15 @@
 package com.squaredem.composecalendar.utils
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.window.Dialog
 
 @Composable
-actual fun AlertDialog(
+actual fun CalendarDialog(
     onDismissRequest: () -> Unit,
-    dismissButton: (@Composable () -> Unit)?,
-    confirmButton: @Composable () -> Unit,
-    text: @Composable () -> Unit,
+    content: @Composable () -> Unit,
 ) {
-    androidx.compose.material3.AlertDialog(
+    Dialog(
         onDismissRequest = onDismissRequest,
-        dismissButton = dismissButton,
-        confirmButton = confirmButton,
-        text = text,
+        content = content
     )
 }

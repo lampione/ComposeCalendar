@@ -57,6 +57,7 @@ fun MainContent() {
         if (showDialog.value) {
             val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
             ComposeCalendar(
+                title = { Text("Select a date") },
                 startDate = today,
                 minDate = today,
                 maxDate = today.plus(100, DateTimeUnit.YEAR),

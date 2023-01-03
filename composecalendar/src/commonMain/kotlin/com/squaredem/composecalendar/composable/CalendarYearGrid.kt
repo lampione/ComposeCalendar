@@ -17,11 +17,13 @@
 package com.squaredem.composecalendar.composable
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.squaredem.composecalendar.daterange.DateRange
 
@@ -35,6 +37,7 @@ internal fun CalendarYearGrid(
 ) {
 
     LazyVerticalGrid(
+        modifier = Modifier.width(280.dp),
         columns = GridCells.Fixed(3),
         state = gridState,
         horizontalArrangement = Arrangement.spacedBy(

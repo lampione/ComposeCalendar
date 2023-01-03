@@ -19,9 +19,7 @@ package com.squaredem.composecalendar.utils
 import androidx.compose.runtime.Composable
 
 @Composable
-expect fun AlertDialog(
+expect fun CalendarDialog(
     onDismissRequest: () -> Unit,
-    dismissButton: (@Composable () -> Unit)? = null,
-    confirmButton: @Composable () -> Unit,
-    text: @Composable () -> Unit,
+    content: @Composable () -> Unit,
 )
