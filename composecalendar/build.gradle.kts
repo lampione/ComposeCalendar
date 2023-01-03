@@ -54,7 +54,9 @@ android {
 }
 
 kotlin {
-    android()
+    android {
+        publishLibraryVariants("release")
+    }
     jvm()
 
     sourceSets {
