@@ -23,6 +23,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.squaredem.composecalendar.utils.LogCompositions
 import com.squaredem.composecalendar.utils.headlineFormat
@@ -31,27 +32,32 @@ import kotlinx.datetime.LocalDate
 @Composable
 internal fun CalendarTopBar(
     title: @Composable () -> Unit,
+    headlinePattern: String,
     selectedDate: LocalDate,
 ) {
-    Column(Modifier.padding(horizontal = 12.dp)) {
+    Column {
+        Spacer(Modifier.height(16.dp))
         CompositionLocalProvider(
             LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant,
             LocalTextStyle provides MaterialTheme.typography.labelMedium,
         ) {
-            title()
+            Box(Modifier.padding(horizontal = 24.dp)) {
+                title()
+            }
         }
 
         Spacer(Modifier.height(36.dp))
 
         Row(
             modifier = Modifier
-                .height(40.dp),
+                .height(40.dp)
+                .padding(horizontal = 24.dp),
         ) {
             LogCompositions("CalendarTopBar")
 
             Text(
                 modifier = Modifier.weight(1f),
-                text = selectedDate.headlineFormat(),
+                text = selectedDate.headlineFormat(headlinePattern),
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -64,5 +70,7 @@ internal fun CalendarTopBar(
         }
 
         Spacer(Modifier.height(12.dp))
+
+        Divider()
     }
 }

@@ -16,13 +16,11 @@
 
 package com.squaredem.composecalendar
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.squaredem.composecalendar.composable.CalendarContent
 import com.squaredem.composecalendar.composable.CalendarTopBar
@@ -36,6 +34,7 @@ import kotlinx.datetime.toLocalDateTime
 @Composable
 fun ComposeCalendar(
     title: @Composable () -> Unit,
+    headlinePattern: String = "EEE, LLL d",
     startDate: LocalDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
     minDate: LocalDate = LocalDate(1900, 1, 1),
     maxDate: LocalDate = LocalDate(2100, 12, 31),
@@ -54,13 +53,11 @@ fun ComposeCalendar(
                 tonalElevation = 6.dp,
                 shape = MaterialTheme.shapes.extraLarge
             ) {
-                Column(
-                    Modifier.padding(top = 16.dp, start = 12.dp, end = 12.dp, bottom = 12.dp)
-
-                ) {
+                Column {
                     CalendarTopBar(
                         title = title,
-                        selectedDate = selectedDate
+                        selectedDate = selectedDate,
+                        headlinePattern = headlinePattern,
                     )
 
                     CalendarContent(

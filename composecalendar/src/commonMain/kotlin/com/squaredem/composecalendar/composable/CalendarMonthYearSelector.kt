@@ -20,6 +20,7 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -40,7 +41,6 @@ import com.squaredem.composecalendar.utils.LogCompositions
 import com.squaredem.composecalendar.utils.monthYearFormat
 import kotlinx.datetime.LocalDate
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CalendarMonthYearSelector(
     pagerDate: LocalDate,
@@ -52,16 +52,17 @@ internal fun CalendarMonthYearSelector(
     LogCompositions("CalendarMonthYearSelector")
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp).height(40.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // This should be DropdownMenuItem when it is implemented all on targets
         // See https://github.com/JetBrains/compose-jb/issues/2037
         TextButton(
-//            modifier = Modifier.height(24.dp),
-            onClick = onClick,
+            onClick = onClick
         ) {
-            Row {
+            Row(
+                Modifier.height(24.dp)
+            ) {
                 Text(
                     text = pagerDate.monthYearFormat(),
                     style = MaterialTheme.typography.labelLarge,

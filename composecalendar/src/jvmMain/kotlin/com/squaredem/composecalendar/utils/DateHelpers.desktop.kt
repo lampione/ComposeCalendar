@@ -23,10 +23,10 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 
-actual fun LocalDate.headlineFormat(): String {
+actual fun LocalDate.headlineFormat(pattern: String): String {
     // TODO: make this work for non-US locales
     //   https://stackoverflow.com/questions/74995307
-    val formatter = DateTimeFormatter.ofPattern("EEE, LLL d")
+    val formatter = DateTimeFormatter.ofPattern(pattern)
     return formatter.format(toJavaLocalDate())
 }
 

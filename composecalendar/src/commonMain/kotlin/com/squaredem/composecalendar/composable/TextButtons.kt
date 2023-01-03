@@ -16,12 +16,14 @@
 
 package com.squaredem.composecalendar.composable
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -32,7 +34,7 @@ internal fun ColumnScope.TextButtons(
     cancelText: String,
 ) {
     Row(
-        modifier = Modifier.align(Alignment.End),
+        modifier = Modifier.height(36.dp).align(Alignment.End).padding(horizontal = 12.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         TextButton(onClick = onCancel) {
@@ -42,4 +44,6 @@ internal fun ColumnScope.TextButtons(
             Text(okText)
         }
     }
+
+    Spacer(Modifier.height(12.dp))
 }

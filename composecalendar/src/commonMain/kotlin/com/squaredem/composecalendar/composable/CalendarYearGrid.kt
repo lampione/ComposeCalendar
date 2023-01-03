@@ -16,8 +16,7 @@
 
 package com.squaredem.composecalendar.composable
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -32,12 +31,11 @@ internal fun CalendarYearGrid(
     gridState: LazyGridState,
     dateRangeByYear: DateRange,
     selectedYear: Int,
-    currentYear: Int,
-    onYearSelected: (Int) -> Unit
+    onYearClick: (Int) -> Unit
 ) {
 
     LazyVerticalGrid(
-        modifier = Modifier.width(280.dp),
+        modifier = Modifier.fillMaxWidth().height(274.dp).padding(horizontal = 12.dp),
         columns = GridCells.Fixed(3),
         state = gridState,
         horizontalArrangement = Arrangement.spacedBy(
@@ -51,10 +49,7 @@ internal fun CalendarYearGrid(
                 CalendarYear(
                     year = it.year,
                     isSelectedYear = it.year == selectedYear,
-                    isCurrentYear = it.year == currentYear,
-                    setSelectedYear = { year ->
-                        onYearSelected(year)
-                    }
+                    setSelectedYear = onYearClick,
                 )
             }
         }
