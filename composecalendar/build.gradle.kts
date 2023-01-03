@@ -79,16 +79,6 @@ kotlin {
     }
 }
 
-//apply(from = "${rootProject.projectDir}/scripts/publish-module.gradle.kts")
-
-//ext {
-//    PUBLISH_GROUP_ID = 'com.squaredem'
-//    PUBLISH_ARTIFACT_ID = 'composecalendar'
-//    PUBLISH_VERSION = '1.0.4'
-//}
-//
-//apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
-
 val localProperties = Properties().apply {
     load(File(rootProject.rootDir, "local.properties").inputStream())
 }

@@ -36,9 +36,7 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation(AndroidX.core.ktx)
                 implementation(compose.preview)
-                implementation(AndroidX.lifecycle.runtime.ktx)
                 implementation(AndroidX.activity.compose)
             }
         }
