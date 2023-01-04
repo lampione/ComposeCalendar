@@ -42,8 +42,8 @@ import kotlinx.datetime.*
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-internal fun CalendarContent(
-    selectedDate: LocalDate,
+internal fun CalendarPicker(
+    selectedDate: LocalDate?,
     minDate: LocalDate,
     maxDate: LocalDate,
     onSelected: (LocalDate) -> Unit,
@@ -53,24 +53,26 @@ internal fun CalendarContent(
     val dateRange = DateRange(minDate, maxDate, DateRangeStep.Month())
     val dateRangeByYear = dateRange.step(DateRangeStep.Year(1))
     val totalPageCount = dateRange.count()
-    val initialPage = remember { getStartPage(selectedDate, dateRange, totalPageCount) }
+    val currentDate = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val initialPage = remember { getStartPage(selectedDate ?: currentDate, dateRange, totalPageCount) }
 
     var isPickingYear by remember { mutableStateOf(false) }
 
     // for display only, used in CalendarMonthYearSelector
-    var currentPagerDate by remember { mutableStateOf(selectedDate) }
+    var currentPagerDate by remember { mutableStateOf(selectedDate ?: currentDate) }
 
     val pagerState = rememberPagerState(initialPage)
     val coroutineScope = rememberCoroutineScope()
-    val gridState = with(dateRangeByYear.indexOfFirst { it.year == selectedDate.year }) {
+    val gridState = with(dateRangeByYear.indexOfFirst { it.year == currentPagerDate.year }) {
         rememberLazyGridState(initialFirstVisibleItemIndex = this)
     }
 
     if (!LocalInspectionMode.current) {
         LaunchedEffect(pagerState) {
             snapshotFlow { pagerState.currentPage }.collect { page ->
-                val currentDate = getDateFromCurrentPage(page, dateRange)
-                currentDate?.let { currentPagerDate = it }
+                getDateFromCurrentPage(page, dateRange)?.let {
+                    currentPagerDate = it
+                }
             }
         }
     }
@@ -129,8 +131,7 @@ internal fun CalendarContent(
                 count = totalPageCount,
                 state = pagerState
             ) { page ->
-                val currentDate = getDateFromCurrentPage(page, dateRange)
-                currentDate?.let {
+                getDateFromCurrentPage(page, dateRange)?.let {
                     // grid
                     CalendarGrid(
                         it.withDayOfMonth(1),
@@ -147,16 +148,17 @@ internal fun CalendarContent(
             CalendarYearGrid(
                 gridState = gridState,
                 dateRangeByYear = dateRangeByYear,
-                selectedYear = selectedDate.year,
+                selectedYear = selectedDate?.year,
                 onYearClick = { year ->
+                    currentPagerDate = currentPagerDate.withYear(year)
+                    selectedDate?.let { onSelected(it.withYear(year)) }
+                    isPickingYear = false
                     coroutineScope.launch {
                         val newPage = dateRange.indexOfFirst {
-                            it.year == year && it.month == selectedDate.month
+                            it.year == year && it.month == currentPagerDate.month
                         }
                         pagerState.scrollToPage(newPage)
                     }
-                    currentPagerDate = currentPagerDate.withYear(year)
-                    isPickingYear = false
                 }
             )
 

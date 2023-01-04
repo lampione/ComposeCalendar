@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun ColumnScope.TextButtons(
+    okEnabled: Boolean,
     onDone: () -> Unit,
     okText: String,
     onCancel: () -> Unit,
@@ -40,7 +41,7 @@ internal fun ColumnScope.TextButtons(
         TextButton(onClick = onCancel) {
             Text(cancelText)
         }
-        TextButton(onClick = onDone) {
+        TextButton(onClick = onDone, enabled = okEnabled) {
             Text(okText)
         }
     }

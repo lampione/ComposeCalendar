@@ -19,11 +19,15 @@ package com.squaredem.composecalendar.utils
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 
-expect fun LocalDate.headlineFormat(pattern: String): String
+expect fun LocalDate.headlineFormat(): String
 
 expect fun LocalDate.monthYearFormat(): String
 
 expect fun DayOfWeek.getFirstLetter(): String
+
+expect fun LocalDate.inputFormat(): String
+
+expect fun parseInput(input: String): LocalDate?
 
 fun LocalDate.withDayOfMonth(day: Int): LocalDate {
     return LocalDate(year = year, monthNumber = monthNumber, dayOfMonth = day)

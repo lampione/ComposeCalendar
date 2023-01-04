@@ -36,7 +36,7 @@ import kotlinx.datetime.*
 internal fun CalendarGrid(
     pagerDate: LocalDate,
     dateRange: DateRange,
-    selectedDate: LocalDate,
+    selectedDate: LocalDate?,
     onSelected: (LocalDate) -> Unit,
     showCurrentMonthOnly: Boolean,
 ) {

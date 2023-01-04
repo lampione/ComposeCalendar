@@ -30,7 +30,7 @@ import com.squaredem.composecalendar.daterange.DateRange
 internal fun CalendarYearGrid(
     gridState: LazyGridState,
     dateRangeByYear: DateRange,
-    selectedYear: Int,
+    selectedYear: Int?,
     onYearClick: (Int) -> Unit
 ) {
 

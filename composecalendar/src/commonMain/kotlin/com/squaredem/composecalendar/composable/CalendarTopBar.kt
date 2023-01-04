@@ -32,8 +32,8 @@ import kotlinx.datetime.LocalDate
 @Composable
 internal fun CalendarTopBar(
     title: @Composable () -> Unit,
-    headlinePattern: String,
-    selectedDate: LocalDate,
+    headline: String,
+    iconContent: @Composable () -> Unit,
 ) {
     Column {
         Spacer(Modifier.height(16.dp))
@@ -57,16 +57,12 @@ internal fun CalendarTopBar(
 
             Text(
                 modifier = Modifier.weight(1f),
-                text = selectedDate.headlineFormat(headlinePattern),
+                text = headline,
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(Modifier.width(8.dp))
-            IconButton(
-                onClick = {}
-            ) {
-                Icon(Icons.Default.Edit, null)
-            }
+            iconContent()
         }
 
         Spacer(Modifier.height(12.dp))

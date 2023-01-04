@@ -39,13 +39,13 @@ fun MainContent() {
     ) {
 
         val showDialog = rememberSaveable { mutableStateOf(false) }
-        val selectedDateMillis = rememberSaveable { mutableStateOf<LocalDate?>(null) }
+        val selectedDate = rememberSaveable { mutableStateOf<LocalDate?>(null) }
 
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            selectedDateMillis.value?.let {
+            selectedDate.value?.let {
                 Text(text = it.toString())
             }
 
@@ -55,14 +55,11 @@ fun MainContent() {
         }
 
         if (showDialog.value) {
-            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
             ComposeCalendar(
                 title = { Text("Select a date") },
-                startDate = today,
-                minDate = today,
-                maxDate = today.plus(100, DateTimeUnit.YEAR),
+                initialDate = selectedDate.value,
                 onDone = { it: LocalDate ->
-                    selectedDateMillis.value = it
+                    selectedDate.value = it
                     showDialog.value = false
                 },
                 onDismiss = { showDialog.value = false }
