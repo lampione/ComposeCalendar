@@ -37,30 +37,32 @@ internal class DateIterator(
     }
 
     private fun getNextStep(): LocalDate {
-        val dateUnit = when (step) {
-            is DateRangeStep.Day -> DateTimeUnit.DAY
-            is DateRangeStep.Month -> DateTimeUnit.MONTH
-            is DateRangeStep.Year -> DateTimeUnit.YEAR
-        }
-
-        return currentDate.plus(step.value, dateUnit)
+        return currentDate.plus(1, step.toDateTimeUnit())
     }
 }
 
 internal class DateRange(
     override val start: LocalDate,
     override val endInclusive: LocalDate,
-    private val step: DateRangeStep = DateRangeStep.Day()
+    private val step: DateRangeStep = DateRangeStep.DAY
 ) : Iterable<LocalDate>, ClosedRange<LocalDate> {
 
     override fun iterator(): Iterator<LocalDate> = DateIterator(start, endInclusive, step)
 
 }
 
-internal sealed class DateRangeStep(val value: Int) {
-    class Day(value: Int = 1) : DateRangeStep(value)
-    class Month(value: Int = 1) : DateRangeStep(value)
-    class Year(value: Int = 1) : DateRangeStep(value)
+internal enum class DateRangeStep {
+    DAY,
+    MONTH,
+    YEAR,
 }
 
-internal fun LocalDate.rangeTo(other: LocalDate, step: DateRangeStep = DateRangeStep.Day()) = DateRange(this, other, step)
+internal fun DateRangeStep.toDateTimeUnit(): DateTimeUnit.DateBased {
+    return when (this) {
+        DateRangeStep.DAY -> DateTimeUnit.DAY
+        DateRangeStep.MONTH -> DateTimeUnit.MONTH
+        DateRangeStep.YEAR -> DateTimeUnit.YEAR
+    }
+}
+
+internal fun LocalDate.rangeTo(other: LocalDate, step: DateRangeStep = DateRangeStep.DAY) = DateRange(this, other, step)

@@ -50,11 +50,8 @@ internal fun CalendarPicker(
 ) {
     LogCompositions("CalendarContent")
 
-    val dateRangeByMonth = DateRange(minDate, maxDate, DateRangeStep.Month())
-    val dateRangeByYear = DateRange(
-        LocalDate(minDate.year, 1, 1),
-        LocalDate(maxDate.year, 1, 1),
-        DateRangeStep.Year())
+    val dateRangeByMonth = DateRange(minDate, maxDate, DateRangeStep.MONTH)
+    val dateRangeByYear = minDate.year..maxDate.year
     val monthPageCount = dateRangeByMonth.count()
     val currentDate = Clock.System.todayIn(TimeZone.currentSystemDefault()).coerceIn(minDate, maxDate)
 
@@ -64,7 +61,7 @@ internal fun CalendarPicker(
     var currentPagerDate by remember { mutableStateOf(selectedDate ?: currentDate) }
 
     var isPickingYear by remember { mutableStateOf(false) }
-    val gridState = with(dateRangeByYear.indexOfFirst { it.year == currentPagerDate.year }) {
+    val gridState = with(dateRangeByYear.indexOfFirst { it == currentPagerDate.year }) {
         rememberLazyGridState(initialFirstVisibleItemIndex = this)
     }
 
@@ -141,7 +138,7 @@ internal fun CalendarPicker(
                         dateRange = dateRangeByMonth,
                         selectedDate = selectedDate,
                         onSelected = { date ->
-                            val index = dateRangeByYear.indexOfFirst { it.year == date.year }
+                            val index = dateRangeByYear.indexOfFirst { it == date.year }
                             if (index > 0) {
                                 coroutineScope.launch {
                                     gridState.scrollToItem(index)
