@@ -39,7 +39,7 @@ import kotlinx.datetime.LocalDate
 
 @ExperimentalMaterial3Api
 @Composable
-fun ComposeCalendar(
+fun ModalDateDialog(
     title: @Composable () -> Unit,
     headlineGenerator: ((LocalDate?) -> String)? = null,
     initialDate: LocalDate? = null,

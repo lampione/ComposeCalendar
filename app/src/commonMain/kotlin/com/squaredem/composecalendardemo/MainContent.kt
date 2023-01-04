@@ -29,7 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.squaredem.composecalendar.ComposeCalendar
+import com.squaredem.composecalendar.ModalDateDialog
 import kotlinx.datetime.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +57,7 @@ fun MainContent() {
         }
 
         if (showDialog.value) {
-            ComposeCalendar(
+            ModalDateDialog(
                 title = { Text("Select a date") },
                 initialDate = selectedDate.value,
                 onDone = { it: LocalDate ->
