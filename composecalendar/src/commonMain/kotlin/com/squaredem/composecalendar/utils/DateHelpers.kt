@@ -25,7 +25,7 @@ expect fun LocalDate.monthYearFormat(): String
 
 expect fun DayOfWeek.getFirstLetter(): String
 
-expect fun LocalDate.inputFormat(): String
+expect fun formatInput(date: LocalDate): String
 
 expect fun parseInput(input: String): LocalDate?
 

@@ -41,15 +41,15 @@ actual fun DayOfWeek.getFirstLetter(): String {
     return getDisplayName(TextStyle.NARROW, Locale.getDefault())
 }
 
-actual fun LocalDate.inputFormat(): String {
-    val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
-    return formatter.format(toJavaLocalDate())
+private val inputFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
+
+actual fun formatInput(date: LocalDate): String {
+    return inputFormatter.format(date.toJavaLocalDate())
 }
 
 actual fun parseInput(input: String): LocalDate? {
-    val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
     return try {
-        java.time.LocalDate.parse(input, formatter).toKotlinLocalDate()
+        java.time.LocalDate.parse(input, inputFormatter).toKotlinLocalDate()
     } catch (tr: Throwable) {
         null
     }

@@ -35,7 +35,9 @@ import com.squaredem.composecalendar.composable.CalendarPicker
 import com.squaredem.composecalendar.composable.CalendarTopBar
 import com.squaredem.composecalendar.composable.TextButtons
 import com.squaredem.composecalendar.utils.CalendarDialog
+import com.squaredem.composecalendar.utils.formatInput
 import com.squaredem.composecalendar.utils.headlineFormat
+import com.squaredem.composecalendar.utils.parseInput
 import kotlinx.datetime.LocalDate
 
 @Composable
@@ -48,6 +50,8 @@ fun ComposeCalendar(
     okText: String = "OK",
     cancelText: String = "Cancel",
     startOnPicker: Boolean = true,
+    inputFormatter: (LocalDate) -> String = ::formatInput,
+    inputParser: (String) -> LocalDate? = ::parseInput,
     inputPattern: String = "mm/dd/yyyy",
     onDone: (selectedDate: LocalDate) -> Unit,
     onDismiss: () -> Unit
@@ -97,6 +101,8 @@ fun ComposeCalendar(
                             onChanged = {
                                 selectedDate = it
                             },
+                            dateFormatter = inputFormatter,
+                            dateParser = inputParser,
                             pattern = inputPattern,
                         )
                     }

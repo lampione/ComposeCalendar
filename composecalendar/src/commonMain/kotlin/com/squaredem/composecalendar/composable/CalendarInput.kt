@@ -23,26 +23,26 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.squaredem.composecalendar.utils.inputFormat
-import com.squaredem.composecalendar.utils.parseInput
 import kotlinx.datetime.LocalDate
 
 @Composable
 fun CalendarInput(
     selectedDate: LocalDate?,
     onChanged: (LocalDate) -> Unit,
+    dateFormatter: (LocalDate) -> String,
+    dateParser: (String) -> LocalDate?,
     pattern: String,
 ) {
-    var text by remember(selectedDate) { mutableStateOf(selectedDate?.inputFormat() ?: "") }
+    var text by remember { mutableStateOf(selectedDate?.let { dateFormatter(it) } ?: "") }
     Column(
-        Modifier.padding(horizontal = 24.dp, vertical = 10.dp)
+        Modifier.padding(start = 24.dp, end = 24.dp, top = 10.dp, bottom = 16.dp)
     ) {
         var hasError by remember { mutableStateOf(false) }
         OutlinedTextField(
             value = text,
             onValueChange = { value ->
                 text = value
-                val result = parseInput(value)
+                val result = dateParser(value)
                 if (result != null) {
                     hasError = false
                     onChanged(result)
