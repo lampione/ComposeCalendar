@@ -23,10 +23,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -40,6 +37,7 @@ import com.squaredem.composecalendar.utils.headlineFormat
 import com.squaredem.composecalendar.utils.parseInput
 import kotlinx.datetime.LocalDate
 
+@ExperimentalMaterial3Api
 @Composable
 fun ComposeCalendar(
     title: @Composable () -> Unit,

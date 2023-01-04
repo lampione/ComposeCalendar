@@ -16,7 +16,6 @@
 
 package com.squaredem.composecalendar.utils
 
-import android.util.Log
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate

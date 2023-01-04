@@ -18,6 +18,7 @@ package com.squaredem.composecalendar.composable
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -25,10 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import kotlinx.datetime.LocalDate
 
+@ExperimentalMaterial3Api
 @Composable
 fun CalendarInput(
     selectedDate: LocalDate?,
-    onChanged: (LocalDate) -> Unit,
+    onChanged: (LocalDate?) -> Unit,
     dateFormatter: (LocalDate) -> String,
     dateParser: (String) -> LocalDate?,
     pattern: String,
@@ -43,12 +45,8 @@ fun CalendarInput(
             onValueChange = { value ->
                 text = value
                 val result = dateParser(value)
-                if (result != null) {
-                    hasError = false
-                    onChanged(result)
-                } else {
-                    hasError = true
-                }
+                hasError = result == null
+                onChanged(result)
             },
             label = { Text("Date") },
             placeholder = { Text(pattern) },
