@@ -86,7 +86,7 @@ val localProperties = Properties().apply {
 }
 
 group = localProperties.getProperty("group", "com.squaredem")
-version = "1.0.4"
+version = "1.0.5"
 
 val dokkaOutputDir = buildDir.resolve("dokka")
 
