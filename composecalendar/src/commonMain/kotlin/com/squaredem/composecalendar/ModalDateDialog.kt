@@ -54,6 +54,8 @@ fun ModalDateDialog(
     onDone: (selectedDate: LocalDate) -> Unit,
     onDismiss: () -> Unit
 ) {
+    check(minDate <= maxDate)
+
     var selectedDate by remember { mutableStateOf(initialDate) }
     var isPicker by remember { mutableStateOf(startOnPicker) }
 

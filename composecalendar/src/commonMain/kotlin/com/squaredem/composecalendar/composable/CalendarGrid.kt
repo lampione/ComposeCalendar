@@ -51,7 +51,7 @@ internal fun CalendarGrid(
         .minus(firstWeekDayOfMonth.value.toLong() - 1, DateTimeUnit.DAY)
     val gridEndDay = gridStartDay.plus(41, DateTimeUnit.DAY)
 
-    val dates = (gridStartDay.rangeTo(gridEndDay) step DateRangeStep.Day()).map {
+    val dates = (gridStartDay.rangeTo(gridEndDay)).map {
         val isCurrentMonth = it.month == pagerMonth
         val isCurrentDay = it == today
         val isSelectedDay = it == selectedDate

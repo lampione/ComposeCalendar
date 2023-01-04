@@ -55,7 +55,6 @@ internal class DateRange(
 
     override fun iterator(): Iterator<LocalDate> = DateIterator(start, endInclusive, step)
 
-    infix fun step(step: DateRangeStep) = DateRange(start, endInclusive, step)
 }
 
 internal sealed class DateRangeStep(val value: Int) {
@@ -64,4 +63,4 @@ internal sealed class DateRangeStep(val value: Int) {
     class Year(value: Int = 1) : DateRangeStep(value)
 }
 
-internal operator fun LocalDate.rangeTo(other: LocalDate) = DateRange(this, other)
+internal fun LocalDate.rangeTo(other: LocalDate, step: DateRangeStep = DateRangeStep.Day()) = DateRange(this, other, step)
