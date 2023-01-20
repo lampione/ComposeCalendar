@@ -32,24 +32,14 @@ android {
 
     defaultConfig {
         minSdk = 26
-        targetSdk = 33
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 }
 
@@ -79,6 +69,10 @@ kotlin {
             }
         }
     }
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions.jvmTarget = "11"
+    }
 }
 
 val localProperties = Properties().apply {
@@ -86,7 +80,7 @@ val localProperties = Properties().apply {
 }
 
 group = localProperties.getProperty("group", "com.squaredem")
-version = "1.0.6"
+version = "1.0.7"
 
 val dokkaOutputDir = buildDir.resolve("dokka")
 

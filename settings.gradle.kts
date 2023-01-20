@@ -17,6 +17,6 @@ dependencyResolutionManagement {
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
-rootProject.name = "Compose Calendar"
+rootProject.name = "compose-calendar"
 include(":app")
 include(":composecalendar")
