@@ -19,10 +19,11 @@ package com.squaredem.composecalendar.utils
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 
+// FIXME: all of the JS conversions are broken. fix them
 actual fun LocalDate.headlineFormat(): String {
     // TODO: make this work for non-US locales
     //   https://stackoverflow.com/questions/74995307
-    return "${month.name} $dayOfMonth"
+    return "${dayOfWeek.name.slice(0..2)}, ${month.name.slice(0..2)} $dayOfMonth"
 }
 
 actual fun LocalDate.monthYearFormat(): String {
@@ -30,7 +31,7 @@ actual fun LocalDate.monthYearFormat(): String {
 }
 
 actual fun DayOfWeek.getFirstLetter(): String {
-    return name.slice(0..1)
+    return name.slice(0..0)
 }
 
 actual fun formatInput(date: LocalDate): String {
