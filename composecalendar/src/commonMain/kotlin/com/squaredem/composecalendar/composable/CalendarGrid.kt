@@ -48,7 +48,7 @@ internal fun CalendarGrid(
     val pagerMonth = pagerDate.month
 
     val gridStartDay = pagerDate
-        .minus(firstWeekDayOfMonth.value.toLong() - 1, DateTimeUnit.DAY)
+        .minus(firstWeekDayOfMonth.ordinal - 1, DateTimeUnit.DAY)
     val gridEndDay = gridStartDay.plus(41, DateTimeUnit.DAY)
 
     val dates = (gridStartDay.rangeTo(gridEndDay)).map {
