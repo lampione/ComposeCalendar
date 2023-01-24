@@ -23,7 +23,7 @@ allprojects {
             publishToMavenCentral(SonatypeHost.S01)
             signAllPublications()
             pom {
-                name.set("ComposeCalendar")
+                name.set(project.name)
                 description.set("A basic library that provides an Android composable view which allows selection of a date from a calendar.")
                 url.set("https://github.com/lampione/ComposeCalendar")
                 licenses {

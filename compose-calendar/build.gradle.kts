@@ -45,9 +45,9 @@ kotlin {
         publishLibraryVariants("release")
     }
     jvm()
-//    js(IR) {
-//        browser()
-//    }
+    js(IR) {
+        browser()
+    }
 
     sourceSets {
         val commonMain by getting {
@@ -59,7 +59,7 @@ kotlin {
                 implementation(compose.materialIconsExtended)
 
                 // pager
-                implementation("ca.gosyer:accompanist-pager:_")
+                implementation("com.seanproctor:accompanist-pager:_")
 
                 // DateTime
                 api(KotlinX.datetime)

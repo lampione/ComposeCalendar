@@ -14,5 +14,8 @@ plugins {
     id("de.fayard.refreshVersions") version "0.51.0"
 }
 
-include(":app")
-include(":composecalendar")
+include(":android")
+include(":desktop")
+include(":jsApp")
+include(":compose-calendar")
+include(":app-common")

@@ -59,7 +59,8 @@ internal fun CalendarTopBar(
                 modifier = Modifier.weight(1f),
                 text = headline,
                 style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
             )
             Spacer(Modifier.width(8.dp))
             iconContent()
