@@ -21,8 +21,13 @@ import java.time.LocalDate
 internal data class DateWrapper(
     val localDate: LocalDate,
     val isSelectedDay: Boolean,
+    val highlightedType: HighlightedType?,
     val isCurrentDay: Boolean,
     val isCurrentMonth: Boolean,
     val isInDateRange: Boolean,
     val showCurrentMonthOnly: Boolean
 )
+
+internal enum class HighlightedType {
+    Start, End, Full;
+}

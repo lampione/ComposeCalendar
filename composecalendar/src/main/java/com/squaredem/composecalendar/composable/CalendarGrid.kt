@@ -52,12 +52,12 @@ internal fun CalendarGrid(
     val dates = (gridStartDay.rangeTo(gridEndDay) step DateRangeStep.Day()).map {
         val isCurrentMonth = it.month == pagerMonth
         val isCurrentDay = it == today
-        val isSelectedDay = false //it == selectedDate
         val isInDateRange = it in dateRange
 
         DateWrapper(
             localDate = it,
-            isSelectedDay = isSelectedDay,
+            isSelectedDay = mode.hasSelectionIndicator(it),
+            highlightedType = mode.highlightedTypeForDay(it),
             isCurrentDay = isCurrentDay,
             isCurrentMonth = isCurrentMonth,
             isInDateRange = isInDateRange,

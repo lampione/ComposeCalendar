@@ -14,6 +14,7 @@
 
 package com.squaredem.composecalendar.composable
 
+import com.squaredem.composecalendar.model.HighlightedType
 import java.time.LocalDate
 
 sealed class CalendarMode {
@@ -45,6 +46,26 @@ sealed class CalendarMode {
             )
         }
     }
+}
+
+internal fun CalendarMode.highlightedTypeForDay(day: LocalDate): HighlightedType? = when (this) {
+    is CalendarMode.Multi -> {
+        when {
+            selection == null -> null
+            selection.endDate == null -> null
+            day == selection.startDate -> HighlightedType.End
+            day == selection.endDate -> HighlightedType.Start
+            day > selection.startDate && day < selection.endDate -> HighlightedType.Full
+            else -> null
+        }
+    }
+
+    is CalendarMode.Single -> null
+}
+
+internal fun CalendarMode.hasSelectionIndicator(day: LocalDate): Boolean = when (this) {
+    is CalendarMode.Multi -> day == selection?.startDate || day == selection?.endDate
+    is CalendarMode.Single -> selectedDate == day
 }
 
 data class DateRangeSelection(
