@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import com.squaredem.composecalendar.composable.CalendarContent
+import com.squaredem.composecalendar.composable.CalendarMode
 import java.time.LocalDate
 import java.time.OffsetTime
 
@@ -53,12 +54,18 @@ fun ComposeCalendar(
         },
         text = {
             CalendarContent(
-                startDate = startDate,
-                minDate = minDate,
-                maxDate = maxDate,
-                onSelected = {
-                    selectedDate.value = it
-                }
+                mode = CalendarMode.Single(
+                    selectedDate = startDate,
+                    minDate = minDate,
+                    maxDate = maxDate,
+                ),
+                onChanged = {
+                    when (it) {
+                        is CalendarMode.Multi -> TODO()
+                        is CalendarMode.Single -> selectedDate.value =
+                            it.selectedDate ?: it.startDate
+                    }
+                },
             )
         }
     )

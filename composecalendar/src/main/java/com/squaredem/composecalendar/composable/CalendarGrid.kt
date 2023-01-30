@@ -33,8 +33,8 @@ import java.time.LocalDate
 internal fun CalendarGrid(
     pagerDate: LocalDate,
     dateRange: DateRange,
-    selectedDate: LocalDate,
-    onSelected: (LocalDate) -> Unit,
+    mode: CalendarMode,
+    onSelected: (CalendarMode) -> Unit,
     showCurrentMonthOnly: Boolean
 ) {
     LogCompositions("CalendarGrid")
@@ -52,7 +52,7 @@ internal fun CalendarGrid(
     val dates = (gridStartDay.rangeTo(gridEndDay) step DateRangeStep.Day()).map {
         val isCurrentMonth = it.month == pagerMonth
         val isCurrentDay = it == today
-        val isSelectedDay = it == selectedDate
+        val isSelectedDay = false //it == selectedDate
         val isInDateRange = it in dateRange
 
         DateWrapper(
@@ -77,7 +77,7 @@ internal fun CalendarGrid(
         ) {
             CalendarDay(
                 date = it,
-                onSelected = onSelected
+                onSelected = { day -> onSelected(mode.onSelectedDay(day)) }
             )
         }
     }

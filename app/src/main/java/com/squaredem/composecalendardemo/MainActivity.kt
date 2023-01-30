@@ -80,12 +80,19 @@ private fun MainActivityContent() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     CalendarContent(
-                        startDate = selectedDate.value ?: LocalDate.now(),
-                        minDate = LocalDate.now().minusMonths(2),
-                        maxDate = LocalDate.MAX,
-                        onSelected = {
-                            selectedDate.value = it
-                            calendarMode = CalendarMode.Hidden
+                        mode = com.squaredem.composecalendar.composable.CalendarMode.Single(
+                            selectedDate = selectedDate.value ?: LocalDate.now(),
+                            minDate = LocalDate.now().minusMonths(2),
+                            maxDate = LocalDate.MAX,
+                        ),
+                        onChanged = {
+                            when (it) {
+                                is com.squaredem.composecalendar.composable.CalendarMode.Multi -> TODO()
+                                is com.squaredem.composecalendar.composable.CalendarMode.Single -> {
+                                    selectedDate.value = it.selectedDate
+                                    calendarMode = CalendarMode.Hidden
+                                }
+                            }
                         },
                         contentConfig = CalendarDefaults.defaultContentConfig(
                             showSelectedDateTitle = false,
