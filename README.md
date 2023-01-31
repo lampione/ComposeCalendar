@@ -19,7 +19,7 @@ then add the latest ComposeCalendar version to your `app/build.gradle` file depe
 
 ```groovy
 dependencies {
-    implementation 'com.squaredem:composecalendar:1.0.4'
+    implementation 'com.squaredem:composecalendar:2.0.0'
 }
 ```
 
@@ -64,8 +64,8 @@ ComposeCalendar(
 
 ## What's next
 
-- Date range selection (from date A to date B)
-- Customizations (fonts, colors, date intervals)
+- Date range selection (from date A to date B) ✅
+- Customizations (fonts, colors ✅, date intervals)
 - ...
 
 I am open to suggestions! Please share your ideas and your needs.
