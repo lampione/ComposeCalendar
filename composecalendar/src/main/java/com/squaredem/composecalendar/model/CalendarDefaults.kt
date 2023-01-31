@@ -22,14 +22,12 @@ import java.time.LocalDate
 object CalendarDefaults {
     fun defaultContentConfig(
         showSelectedDateTitle: Boolean = true,
-        showCurrentMonthOnly: Boolean = false,
-        showGoToTodayButton: Boolean = false,
+        extraButtonHelper: ExtraButtonHelperType = ExtraButtonHelperType.MonthChevrons,
         calendarDayOption: ((LocalDate) -> DayOption)? = null,
         weekdaysMode: WeekDaysMode = WeekDaysMode.SingleLetter,
     ) = CalendarContentConfig(
         showSelectedDateTitle = showSelectedDateTitle,
-        showCurrentMonthOnly = showCurrentMonthOnly,
-        showGoToTodayButton = showGoToTodayButton,
+        extraButtonHelper = extraButtonHelper,
         calendarDayOption = calendarDayOption,
         weekDaysMode = weekdaysMode,
     )

@@ -51,6 +51,7 @@ import com.squaredem.composecalendar.model.CalendarColors
 import com.squaredem.composecalendar.model.CalendarContentConfig
 import com.squaredem.composecalendar.model.CalendarDefaults
 import com.squaredem.composecalendar.model.ColorScheme
+import com.squaredem.composecalendar.model.ExtraButtonHelperType
 import com.squaredem.composecalendar.model.LocalCalendarColorScheme
 import com.squaredem.composecalendar.utils.LogCompositions
 import com.squaredem.composecalendar.utils.assertValidPageOrNull
@@ -105,6 +106,13 @@ internal fun CalendarContent(
             currentMode = it
         }
 
+        val isTodayAvailable by remember {
+            derivedStateOf {
+                val today = LocalDate.now()
+                today.isAfter(dateRange.start) && today.isBefore(dateRange.endInclusive)
+            }
+        }
+
         if (!LocalInspectionMode.current) {
             LaunchedEffect(pagerState) {
                 snapshotFlow { pagerState.currentPage }.collect { page ->
@@ -123,7 +131,7 @@ internal fun CalendarContent(
             if (contentConfig.showSelectedDateTitle) {
                 CalendarTopBar(currentMode)
             }
-
+            val scope = rememberCoroutineScope()
             CalendarMonthYearSelector(
                 pagerDate = currentPagerDate,
                 onChipClicked = { isPickingYear = !isPickingYear },
@@ -163,9 +171,22 @@ internal fun CalendarContent(
                         }
                     }
                 },
+                onGoToToday = {
+                    scope.launch {
+                        val range = dateRange
+                        range.indexOfFirst {
+                            it.withDayOfMonth(1) == LocalDate.now().withDayOfMonth(1)
+                        }.assertValidPageOrNull(pagerState)?.let {
+                            pagerState.scrollToPage(it)
+                        }
+                    }
+                },
                 isNextMonthEnabled = pagerState.nextPage() != null,
                 isPreviousMonthEnabled = pagerState.previousPage() != null,
-                isMonthSelectorVisible = !isPickingYear,
+                isMonthSelectorVisible = !isPickingYear &&
+                    contentConfig.extraButtonHelper == ExtraButtonHelperType.MonthChevrons,
+                isTodayButtonVisible = !isPickingYear && isTodayAvailable &&
+                    contentConfig.extraButtonHelper == ExtraButtonHelperType.Today,
             )
 
             val minHeight = 375.dp

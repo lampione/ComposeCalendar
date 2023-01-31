@@ -20,14 +20,12 @@ import java.time.LocalDate
  * Configuration settings for the calendar view.
  *
  * @param showSelectedDateTitle should show title with the current date selection.
- * @param showCurrentMonthOnly should show days for the current month only.
- * @param showGoToTodayButton should show go to today button.
+ * @param extraButtonHelper which helper button should be shown.
  * @param calendarDayOption should apply different options for specific days.
  */
 data class CalendarContentConfig(
     val showSelectedDateTitle: Boolean,
-    val showCurrentMonthOnly: Boolean,
-    val showGoToTodayButton: Boolean,
+    val extraButtonHelper: ExtraButtonHelperType?,
     val weekDaysMode: WeekDaysMode,
     val calendarDayOption: ((LocalDate) -> DayOption)?,
 )
@@ -51,4 +49,16 @@ sealed class DayOption {
 
 enum class WeekDaysMode {
     SingleLetter, DoubleLetter
+}
+
+enum class ExtraButtonHelperType {
+    /**
+     * Button to navigate to current month.
+     */
+    Today,
+
+    /**
+     * Navigation buttons to go to next and previous months.
+     */
+    MonthChevrons
 }

@@ -30,6 +30,7 @@ import com.squaredem.composecalendar.RangeDatePicker
 import com.squaredem.composecalendar.composable.DateRangeSelection
 import com.squaredem.composecalendar.model.CalendarDefaults
 import com.squaredem.composecalendar.model.DayOption
+import com.squaredem.composecalendar.model.ExtraButtonHelperType
 import com.squaredem.composecalendar.model.WeekDaysMode
 import java.time.DayOfWeek
 
@@ -99,6 +100,7 @@ private fun MainActivityContent() {
                         contentConfig = CalendarDefaults.defaultContentConfig(
                             showSelectedDateTitle = false,
                             weekdaysMode = WeekDaysMode.DoubleLetter,
+                            extraButtonHelper = ExtraButtonHelperType.Today,
                             calendarDayOption = {
                                 // Example of a filter for days.
                                 when (it.dayOfWeek) {
