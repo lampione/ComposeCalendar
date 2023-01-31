@@ -16,15 +16,31 @@ package com.squaredem.composecalendar.composable
 
 import com.squaredem.composecalendar.model.HighlightedType
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 sealed class CalendarMode {
-    val startDate: LocalDate
-        get() = when (this) {
-            is Multi -> selection?.startDate ?: LocalDate.now()
-            is Single -> selectedDate ?: LocalDate.now()
-        }
     abstract val minDate: LocalDate
     abstract val maxDate: LocalDate
+
+    val startDate: LocalDate
+        get() = when (this) {
+            is Range -> selection?.startDate ?: LocalDate.now()
+            is Single -> selectedDate ?: LocalDate.now()
+        }
+
+    fun onSelectedDay(localDate: LocalDate): CalendarMode {
+        return when (this) {
+            is Range -> {
+                onDayClicked(localDate)
+            }
+
+            is Single -> {
+                copy(
+                    selectedDate = localDate,
+                )
+            }
+        }
+    }
 
     data class Single(
         override val minDate: LocalDate,
@@ -32,24 +48,81 @@ sealed class CalendarMode {
         val selectedDate: LocalDate? = null,
     ) : CalendarMode()
 
-    data class Multi(
+    data class Range(
         override val minDate: LocalDate,
         override val maxDate: LocalDate,
         val selection: DateRangeSelection? = null,
     ) : CalendarMode()
+}
 
-    fun onSelectedDay(localDate: LocalDate): CalendarMode {
-        return when (this) {
-            is Multi -> this.copy()
-            is Single -> this.copy(
-                selectedDate = localDate
+internal fun CalendarMode.Range.onDayClicked(day: LocalDate): CalendarMode.Range = when {
+    selection == null -> {
+        copy(selection = DateRangeSelection(day))
+    }
+
+    day == selection.startDate && selection.endDate == null -> {
+        copy(
+            selection = null
+        )
+    }
+
+    day.isBefore(selection.startDate) && selection.endDate == null -> {
+        copy(
+            selection = selection.copy(
+                startDate = day,
+                endDate = selection.startDate
+            ),
+        )
+    }
+
+    day.isBefore(selection.startDate) -> {
+        copy(
+            selection = selection.copy(startDate = day),
+        )
+    }
+
+    selection.endDate == null || day.isAfter(selection.endDate) -> {
+        copy(
+            selection = selection.copy(endDate = day),
+        )
+    }
+
+    selection.startDate == day -> {
+        copy(
+            selection = DateRangeSelection(
+                startDate = selection.endDate
+            )
+        )
+    }
+
+    selection.endDate == day -> {
+        copy(
+            selection = DateRangeSelection(
+                startDate = selection.startDate
+            )
+        )
+    }
+
+    day.isAfter(selection.startDate) && day.isBefore(selection.endDate) -> {
+        val daysFromStart = ChronoUnit.DAYS.between(selection.startDate, day)
+        val daysToEnd = ChronoUnit.DAYS.between(day, selection.endDate)
+
+        if (daysFromStart < daysToEnd) {
+            copy(
+                selection = selection.copy(startDate = day),
+            )
+        } else {
+            copy(
+                selection = selection.copy(endDate = day),
             )
         }
     }
+
+    else -> this
 }
 
 internal fun CalendarMode.highlightedTypeForDay(day: LocalDate): HighlightedType? = when (this) {
-    is CalendarMode.Multi -> {
+    is CalendarMode.Range -> {
         when {
             selection == null -> null
             selection.endDate == null -> null
@@ -64,7 +137,7 @@ internal fun CalendarMode.highlightedTypeForDay(day: LocalDate): HighlightedType
 }
 
 internal fun CalendarMode.hasSelectionIndicator(day: LocalDate): Boolean = when (this) {
-    is CalendarMode.Multi -> day == selection?.startDate || day == selection?.endDate
+    is CalendarMode.Range -> day == selection?.startDate || day == selection?.endDate
     is CalendarMode.Single -> selectedDate == day
 }
 

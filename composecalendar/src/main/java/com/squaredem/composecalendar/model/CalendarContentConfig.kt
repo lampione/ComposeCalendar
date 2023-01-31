@@ -12,24 +12,43 @@
  * limitations under the License.
  */
 
-package com.squaredem.composecalendar.composable
+package com.squaredem.composecalendar.model
 
 import java.time.LocalDate
 
 /**
- * Configuration settings for [CalendarContent].
+ * Configuration settings for the calendar view.
  *
  * @param showSelectedDateTitle should show title with the current date selection.
  * @param showCurrentMonthOnly should show days for the current month only.
+ * @param showGoToTodayButton should show go to today button.
  * @param calendarDayOption should apply different options for specific days.
  */
 data class CalendarContentConfig(
     val showSelectedDateTitle: Boolean,
     val showCurrentMonthOnly: Boolean,
+    val showGoToTodayButton: Boolean,
+    val weekDaysMode: WeekDaysMode,
     val calendarDayOption: ((LocalDate) -> DayOption)?,
 )
 
 sealed class DayOption {
     data class Disabled(val selectable: Boolean = false) : DayOption()
     object Default : DayOption()
+
+    val isClickable: Boolean
+        get() = when (this) {
+            Default -> true
+            is Disabled -> selectable
+        }
+
+    val hasDisabledStyle: Boolean
+        get() = when (this) {
+            Default -> false
+            is Disabled -> true
+        }
+}
+
+enum class WeekDaysMode {
+    SingleLetter, DoubleLetter
 }

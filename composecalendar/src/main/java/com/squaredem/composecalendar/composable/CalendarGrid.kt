@@ -26,6 +26,7 @@ import com.squaredem.composecalendar.daterange.DateRange
 import com.squaredem.composecalendar.daterange.DateRangeStep
 import com.squaredem.composecalendar.daterange.rangeTo
 import com.squaredem.composecalendar.model.DateWrapper
+import com.squaredem.composecalendar.model.DayOption
 import com.squaredem.composecalendar.utils.LogCompositions
 import java.time.LocalDate
 
@@ -35,6 +36,7 @@ internal fun CalendarGrid(
     dateRange: DateRange,
     mode: CalendarMode,
     onSelected: (CalendarMode) -> Unit,
+    calendarDayOption: ((LocalDate) -> DayOption)?,
     showCurrentMonthOnly: Boolean
 ) {
     LogCompositions("CalendarGrid")
@@ -67,7 +69,6 @@ internal fun CalendarGrid(
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
-        horizontalArrangement = Arrangement.spacedBy(gridSpacing),
         verticalArrangement = Arrangement.spacedBy(gridSpacing),
     ) {
         items(
@@ -77,7 +78,8 @@ internal fun CalendarGrid(
         ) {
             CalendarDay(
                 date = it,
-                onSelected = { day -> onSelected(mode.onSelectedDay(day)) }
+                onSelected = { day -> onSelected(mode.onSelectedDay(day)) },
+                dayOption = calendarDayOption?.invoke(it.localDate) ?: DayOption.Default,
             )
         }
     }

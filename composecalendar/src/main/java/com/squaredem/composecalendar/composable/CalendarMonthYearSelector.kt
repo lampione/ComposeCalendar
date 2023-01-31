@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.squaredem.composecalendar.model.ColorScheme
 import com.squaredem.composecalendar.utils.LogCompositions
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -52,7 +53,6 @@ internal fun CalendarMonthYearSelector(
     isNextMonthEnabled: Boolean = true,
     isPreviousMonthEnabled: Boolean = true,
     isMonthSelectorVisible: Boolean = true,
-    calendarColors: CalendarColors,
 ) {
     LogCompositions("CalendarMonthYearSelector")
 
@@ -67,15 +67,20 @@ internal fun CalendarMonthYearSelector(
         FilterChip(
             label = {
                 Text(
-                    pagerMonthFormat.format(
+                    text = pagerMonthFormat.format(
                         Date.from(pagerDate.atTime(OffsetTime.now()).toInstant())
-                    )
+                    ),
+                    color = ColorScheme.yearPickerTitleHighlight,
                 )
             },
             selected = false,
             border = null,
             trailingIcon = {
-                Icon(Icons.Default.ArrowDropDown, "ArrowDropDown")
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "ArrowDropDown",
+                    tint = ColorScheme.yearPickerTitleHighlight
+                )
             },
             onClick = onChipClicked,
         )
@@ -90,7 +95,7 @@ internal fun CalendarMonthYearSelector(
                     onClick = onPreviousMonth,
                     enabled = isPreviousMonthEnabled,
                     colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = calendarColors.monthChevronColor
+                        contentColor = ColorScheme.monthChevron
                     )
                 ) {
                     Icon(Icons.Default.ChevronLeft, "ChevronLeft")
@@ -99,7 +104,7 @@ internal fun CalendarMonthYearSelector(
                     onClick = onNextMonth,
                     enabled = isNextMonthEnabled,
                     colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = calendarColors.monthChevronColor
+                        contentColor = ColorScheme.monthChevron
                     )
                 ) {
                     Icon(Icons.Default.ChevronRight, "ChevronRight")

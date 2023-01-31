@@ -59,5 +59,4 @@ internal fun CalendarYearGrid(
             }
         }
     }
-
 }

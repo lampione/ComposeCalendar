@@ -23,18 +23,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
-import com.squaredem.composecalendar.composable.CalendarContent
 import com.squaredem.composecalendar.composable.CalendarMode
+import com.squaredem.composecalendar.model.CalendarColors
+import com.squaredem.composecalendar.model.CalendarContentConfig
+import com.squaredem.composecalendar.model.CalendarDefaults
 import java.time.LocalDate
-import java.time.OffsetTime
 
+/**
+ * Display an alert dialog to pick a single date.
+ */
 @Composable
 fun ComposeCalendar(
     startDate: LocalDate = LocalDate.now(),
     minDate: LocalDate = LocalDate.MIN,
     maxDate: LocalDate = LocalDate.MAX,
     onDone: (millis: LocalDate) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    contentConfig: CalendarContentConfig = CalendarDefaults.defaultContentConfig(),
+    calendarColors: CalendarColors = CalendarDefaults.defaultColors(),
 ) {
     val selectedDate = remember { mutableStateOf(startDate) }
 
@@ -53,19 +59,17 @@ fun ComposeCalendar(
             }
         },
         text = {
-            CalendarContent(
+            SingleDatePicker(
                 mode = CalendarMode.Single(
                     selectedDate = startDate,
                     minDate = minDate,
                     maxDate = maxDate,
                 ),
                 onChanged = {
-                    when (it) {
-                        is CalendarMode.Multi -> TODO()
-                        is CalendarMode.Single -> selectedDate.value =
-                            it.selectedDate ?: it.startDate
-                    }
+                    selectedDate.value = it.selectedDate ?: it.startDate
                 },
+                contentConfig = contentConfig,
+                calendarColors = calendarColors,
             )
         }
     )

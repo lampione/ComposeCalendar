@@ -12,10 +12,23 @@
  * limitations under the License.
  */
 
-package com.squaredem.composecalendar.composable
+package com.squaredem.composecalendar.utils
 
-import androidx.compose.ui.graphics.Color
+import com.squaredem.composecalendar.model.WeekDaysMode
+import java.time.DayOfWeek
+import java.time.format.TextStyle
+import java.util.Locale
 
-data class CalendarColors(
-    val monthChevronColor: Color,
-)
+internal fun WeekDaysMode.getText(day: DayOfWeek): String = when (this) {
+    WeekDaysMode.SingleLetter -> day.getDisplayName(
+        TextStyle.NARROW,
+        Locale.getDefault()
+    )
+
+    WeekDaysMode.DoubleLetter -> {
+        day.getDisplayName(
+            TextStyle.SHORT_STANDALONE,
+            Locale.getDefault()
+        ).substring(0, 2)
+    }
+}

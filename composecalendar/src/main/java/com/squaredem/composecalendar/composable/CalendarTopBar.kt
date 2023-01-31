@@ -24,9 +24,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.squaredem.composecalendar.model.ColorScheme
 import com.squaredem.composecalendar.utils.LogCompositions
 import java.text.DateFormat
-import java.time.LocalDate
 import java.time.OffsetTime
 import java.util.*
 
@@ -40,7 +40,7 @@ internal fun CalendarTopBar(mode: CalendarMode) {
         LogCompositions("CalendarTopBar")
         val dateFormatter = DateFormat.getDateInstance(DateFormat.DEFAULT)
         val text = when (mode) {
-            is CalendarMode.Multi -> {
+            is CalendarMode.Range -> {
                 val startDate = (mode.selection?.startDate ?: mode.startDate)
                     .atTime(OffsetTime.now()).toInstant().let {
                         dateFormatter.format(Date.from(it))
@@ -66,10 +66,10 @@ internal fun CalendarTopBar(mode: CalendarMode) {
         Text(
             text = text,
             style = when (mode) {
-                is CalendarMode.Multi -> MaterialTheme.typography.headlineMedium
+                is CalendarMode.Range -> MaterialTheme.typography.headlineMedium
                 is CalendarMode.Single -> MaterialTheme.typography.headlineLarge
             },
-            color = MaterialTheme.colorScheme.onPrimaryContainer
+            color = ColorScheme.headerText,
         )
     }
 }
