@@ -21,57 +21,41 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.squaredem.composecalendar.model.ColorScheme
 import com.squaredem.composecalendar.model.DateWrapper
+import com.squaredem.composecalendar.model.DayOption
+import com.squaredem.composecalendar.model.HighlightedType
 import com.squaredem.composecalendar.utils.LogCompositions
 import java.time.LocalDate
 
 @Composable
 internal fun CalendarDay(
     date: DateWrapper,
-    onSelected: (LocalDate) -> Unit
+    dayOption: DayOption,
+    onSelected: (LocalDate) -> Unit,
 ) {
     LogCompositions("CalendarDay")
 
-    var currentModifier = Modifier
-        .aspectRatio(1F)
-        .clip(CircleShape)
+    var currentModifier = Modifier.aspectRatio(1F)
 
     if (!date.isCurrentMonth && date.showCurrentMonthOnly) {
         Box(modifier = currentModifier)
         return
     }
 
-    currentModifier = when {
-        date.isSelectedDay -> {
-            currentModifier
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
-                )
-        }
-        date.isCurrentDay -> {
-            currentModifier
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
-                )
-        }
-        else -> currentModifier
-    }
-
-    if (date.isInDateRange) {
+    if (date.isInDateRange && dayOption.isClickable) {
         currentModifier = currentModifier.clickable {
             onSelected(date.localDate)
         }
@@ -79,18 +63,29 @@ internal fun CalendarDay(
 
     val textColor = when {
         !date.isInDateRange -> {
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38F)
+            ColorScheme.defaultText.copy(alpha = 0.38F)
         }
+
         date.isSelectedDay -> {
-            MaterialTheme.colorScheme.onPrimary
+            ColorScheme.selectedDayText
         }
+
         date.isCurrentDay -> {
-            MaterialTheme.colorScheme.primary
+            ColorScheme.currentDayHighlight
         }
+
         !date.isCurrentMonth -> {
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.6F)
+            ColorScheme.defaultText.copy(alpha = 0.6F)
         }
-        else -> Color.Unspecified
+
+        else -> ColorScheme.defaultText
+    }.let {
+        // Disabled style always overrides other styles.
+        if (dayOption.hasDisabledStyle) {
+            it.copy(alpha = 0.6F)
+        } else {
+            it
+        }
     }
 
     val text = "${date.localDate.dayOfMonth}"
@@ -99,6 +94,70 @@ internal fun CalendarDay(
         modifier = currentModifier,
         contentAlignment = Alignment.Center
     ) {
+        when (date.highlightedType) {
+            HighlightedType.Start -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .fillMaxHeight()
+                            .background(ColorScheme.inRangeDayBackground)
+                    )
+                }
+            }
+
+            HighlightedType.End -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .fillMaxHeight()
+                            .background(ColorScheme.inRangeDayBackground)
+                    )
+                }
+            }
+
+            HighlightedType.Full -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(ColorScheme.inRangeDayBackground),
+                )
+            }
+
+            null -> Unit
+        }
+
+        if (date.isCurrentDay) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(2.dp)
+                    .border(
+                        width = 1.dp,
+                        color = ColorScheme.currentDayHighlight,
+                        shape = CircleShape
+                    ),
+            )
+        }
+
+        if (date.isSelectedDay) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        color = ColorScheme.selectedDayBackground,
+                        shape = CircleShape
+                    ),
+            )
+        }
+
         Text(
             text = text,
             color = textColor,

@@ -24,17 +24,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,192 +47,221 @@ import com.google.accompanist.pager.rememberPagerState
 import com.squaredem.composecalendar.daterange.DateRange
 import com.squaredem.composecalendar.daterange.DateRangeStep
 import com.squaredem.composecalendar.daterange.rangeTo
+import com.squaredem.composecalendar.model.CalendarColors
+import com.squaredem.composecalendar.model.CalendarContentConfig
+import com.squaredem.composecalendar.model.CalendarDefaults
+import com.squaredem.composecalendar.model.ColorScheme
+import com.squaredem.composecalendar.model.ExtraButtonHelperType
+import com.squaredem.composecalendar.model.LocalCalendarColorScheme
 import com.squaredem.composecalendar.utils.LogCompositions
+import com.squaredem.composecalendar.utils.assertValidPageOrNull
 import com.squaredem.composecalendar.utils.closestValidRange
 import com.squaredem.composecalendar.utils.customLog
-import com.squaredem.composecalendar.utils.assertValidPageOrNull
+import com.squaredem.composecalendar.utils.getText
 import com.squaredem.composecalendar.utils.logDebugWarning
 import com.squaredem.composecalendar.utils.nextPage
 import com.squaredem.composecalendar.utils.previousPage
-import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.format.TextStyle
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalAnimationApi::class)
 @Composable
-fun CalendarContent(
-    startDate: LocalDate,
-    minDate: LocalDate,
-    maxDate: LocalDate,
-    onSelected: (LocalDate) -> Unit,
+internal fun CalendarContent(
+    mode: CalendarMode,
+    onChanged: (CalendarMode) -> Unit,
     modifier: Modifier = Modifier,
     contentConfig: CalendarContentConfig = CalendarDefaults.defaultContentConfig(),
     calendarColors: CalendarColors = CalendarDefaults.defaultColors(),
 ) {
     LogCompositions("CalendarContent")
+    CompositionLocalProvider(LocalCalendarColorScheme provides calendarColors) {
+        var currentMode by remember { mutableStateOf(mode) }
+        val dateRange by remember(currentMode) {
+            derivedStateOf { getDateRange(mode.minDate, mode.maxDate) }
+        }
+        val dateRangeByYear = dateRange.step(DateRangeStep.Year(1))
+        val totalPageCount = dateRange.count()
+        val initialPage = getStartPage(mode.startDate, dateRange, totalPageCount)
+        var isPickingYear by remember { mutableStateOf(false) }
 
-    val dateRange = remember {
-        derivedStateOf { getDateRange(minDate, maxDate) }
-    }
-    val dateRangeByYear = dateRange.value.step(DateRangeStep.Year(1))
-    val totalPageCount = dateRange.value.count()
-    val initialPage = getStartPage(startDate, dateRange.value, totalPageCount)
+        // for display only, used in CalendarMonthYearSelector
+        var currentPagerDate by remember { mutableStateOf(LocalDate.now()) }
+        val selectedYear by remember(currentMode) {
+            derivedStateOf { currentPagerDate.year }
+        }
+        val pagerState = rememberPagerState(initialPage ?: 0)
+        val coroutineScope = rememberCoroutineScope()
 
-    val isPickingYear = remember { mutableStateOf(false) }
+        val gridState = with(dateRangeByYear.indexOfFirst { it.year == selectedYear }) {
+            rememberLazyGridState(initialFirstVisibleItemIndex = coerceAtLeast(0))
+        }
 
-    // for display only, used in CalendarMonthYearSelector
-    val currentPagerDate = remember { mutableStateOf(startDate.withDayOfMonth(1)) }
-    val currentYear = remember { mutableStateOf(currentPagerDate.value.year) }
-    val selectedDate = remember { mutableStateOf(startDate) }
-    val pagerState = rememberPagerState(initialPage ?: 0)
-    val coroutineScope = rememberCoroutineScope()
-    val gridState = with(dateRangeByYear.indexOfFirst { it.year == selectedDate.value.year }) {
-        rememberLazyGridState(initialFirstVisibleItemIndex = coerceAtLeast(0))
-    }
-    val setSelectedDate: (LocalDate) -> Unit = {
-        onSelected(it)
-        selectedDate.value = it
-    }
+        val setCurrentMode: (CalendarMode) -> Unit = {
+            onChanged(it)
+            currentMode = it
+        }
 
-    if (!LocalInspectionMode.current) {
-        LaunchedEffect(pagerState) {
-            snapshotFlow { pagerState.currentPage }.collect { page ->
-                val currentDate = getDateFromCurrentPage(page, dateRange.value)
-                currentPagerDate.value = currentDate
+        val isTodayAvailable by remember {
+            derivedStateOf {
+                val today = LocalDate.now()
+                today.isAfter(dateRange.start) && today.isBefore(dateRange.endInclusive)
             }
         }
-    }
 
-    Column(
-        modifier = Modifier
-            .wrapContentHeight()
-            .then(modifier),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        if (contentConfig.showSelectedDateTitle) {
-            CalendarTopBar(selectedDate.value)
+        if (!LocalInspectionMode.current) {
+            LaunchedEffect(pagerState) {
+                snapshotFlow { pagerState.currentPage }.collect { page ->
+                    val currentDate = getDateFromCurrentPage(page, dateRange)
+                    currentPagerDate = currentDate
+                }
+            }
         }
 
-        CalendarMonthYearSelector(
-            pagerDate = currentPagerDate.value,
-            onChipClicked = { isPickingYear.value = !isPickingYear.value },
-            onNextMonth = {
-                coroutineScope.launch {
-                    try {
-                        pagerState.nextPage()?.let { newPage ->
-                            pagerState.animateScrollToPage(newPage)
-                        } ?: logDebugWarning(
-                            "Trying to get next page and failed ${pagerState.currentPage}.",
-                        )
-                    } catch (e: Throwable) {
-                        e.customLog(
-                            """
+        Column(
+            modifier = Modifier
+                .wrapContentHeight()
+                .then(modifier),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            if (contentConfig.showSelectedDateTitle) {
+                CalendarTopBar(currentMode)
+            }
+            val scope = rememberCoroutineScope()
+            CalendarMonthYearSelector(
+                pagerDate = currentPagerDate,
+                dateFormat = contentConfig.calendarYearPickerFormat,
+                onChipClicked = { isPickingYear = !isPickingYear },
+                onNextMonth = {
+                    coroutineScope.launch {
+                        try {
+                            pagerState.nextPage()?.let { newPage ->
+                                pagerState.animateScrollToPage(newPage)
+                            } ?: logDebugWarning(
+                                "Trying to get next page and failed ${pagerState.currentPage}.",
+                            )
+                        } catch (e: Throwable) {
+                            e.customLog(
+                                """
                             Trying to animate to invalid NewPage: [${pagerState.nextPage()}] of
                             [$pagerState]
                         """.trimIndent()
-                        )
-                    }
-                }
-            },
-            onPreviousMonth = {
-                coroutineScope.launch {
-                    try {
-                        pagerState.previousPage()?.let { newPage ->
-                            pagerState.animateScrollToPage(newPage)
-                        } ?: logDebugWarning(
-                            "Trying to get precious page and failed ${pagerState.currentPage}.",
-                        )
-                    } catch (e: Throwable) {
-                        e.customLog(
-                            """
-                            Trying to animate to invalid NewPage: [${pagerState.nextPage()}] of
-                            [$pagerState]
-                        """.trimIndent()
-                        )
-                    }
-                }
-            },
-            isNextMonthEnabled = pagerState.nextPage() != null,
-            isPreviousMonthEnabled = pagerState.previousPage() != null,
-            isMonthSelectorVisible = !isPickingYear.value,
-            calendarColors = calendarColors,
-        )
-
-        val minHeight = 375.dp
-        AnimatedContent(
-            targetState = isPickingYear.value,
-        ) { isYearPicker ->
-            when (isYearPicker) {
-                true -> {
-                    CalendarYearGrid(
-                        gridState = gridState,
-                        dateRangeByYear = dateRangeByYear,
-                        selectedYear = currentYear.value,
-                        currentYear = startDate.year,
-                        onYearSelected = { year ->
-                            val currentMonth = getDateFromCurrentPage(
-                                currentPage = pagerState.currentPage,
-                                dateRange = dateRange.value,
-                            )?.month ?: selectedDate.value.month
-                            currentYear.value = year
-                            coroutineScope.launch {
-                                dateRange.value
-                                    .indexOfFirst { it.year == year && it.month == currentMonth }
-                                    .assertValidPageOrNull(pagerState)
-                                    .closestValidRange(
-                                        date = LocalDate.of(year, currentMonth, 1),
-                                        maxDate = maxDate,
-                                        minDate = minDate,
-                                        maxIndex = dateRange.value.count() - 1,
-                                    )
-                                    ?.let { pagerState.scrollToPage(it) }
-                            }
-                            currentPagerDate.value = currentPagerDate.value.withYear(year)
-                            isPickingYear.value = false
-                        },
-                        modifier = Modifier.height(minHeight)
-                    )
-                }
-                false -> {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier.height(minHeight),
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            DayOfWeek.values().forEach {
-                                Text(
-                                    modifier = Modifier.weight(1f),
-                                    text = it.getDisplayName(
-                                        TextStyle.NARROW,
-                                        Locale.getDefault()
-                                    ),
-                                    textAlign = TextAlign.Center,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            }
+                            )
                         }
+                    }
+                },
+                onPreviousMonth = {
+                    coroutineScope.launch {
+                        try {
+                            pagerState.previousPage()?.let { newPage ->
+                                pagerState.animateScrollToPage(newPage)
+                            } ?: logDebugWarning(
+                                "Trying to get page and failed ${pagerState.currentPage}.",
+                            )
+                        } catch (e: Throwable) {
+                            e.customLog(
+                                """
+                            Trying to animate to invalid NewPage: [${pagerState.nextPage()}] of
+                            [$pagerState]
+                        """.trimIndent()
+                            )
+                        }
+                    }
+                },
+                onGoToToday = {
+                    scope.launch {
+                        val range = dateRange
+                        range.indexOfFirst {
+                            it.withDayOfMonth(1) == LocalDate.now().withDayOfMonth(1)
+                        }.assertValidPageOrNull(pagerState)?.let {
+                            pagerState.scrollToPage(it)
+                        }
+                    }
+                },
+                isNextMonthEnabled = pagerState.nextPage() != null,
+                isPreviousMonthEnabled = pagerState.previousPage() != null,
+                isMonthSelectorVisible = !isPickingYear &&
+                    contentConfig.extraButtonHelper == ExtraButtonHelperType.MonthChevrons,
+                isTodayButtonVisible = !isPickingYear && isTodayAvailable &&
+                    contentConfig.extraButtonHelper == ExtraButtonHelperType.Today,
+            )
 
-                        HorizontalPager(
-                            count = totalPageCount,
-                            state = pagerState,
-                        ) { page ->
-                            val currentDate = getDateFromCurrentPage(page, dateRange.value)
-                            currentDate?.let {
-                                // grid
-                                CalendarGrid(
-                                    pagerDate = it.withDayOfMonth(1),
-                                    dateRange = dateRange.value,
-                                    selectedDate = selectedDate.value,
-                                    onSelected = setSelectedDate,
-                                    showCurrentMonthOnly = true
-                                )
+            val minHeight = 375.dp
+            AnimatedContent(
+                targetState = isPickingYear,
+            ) { isYearPicker ->
+                when (isYearPicker) {
+                    true -> {
+                        CalendarYearGrid(
+                            gridState = gridState,
+                            dateRangeByYear = dateRangeByYear,
+                            selectedYear = currentPagerDate.year,
+                            currentYear = LocalDate.now().year,
+                            onYearSelected = { year ->
+                                val currentMonth = getDateFromCurrentPage(
+                                    currentPage = pagerState.currentPage,
+                                    dateRange = dateRange,
+                                )?.month ?: currentMode.startDate.month
+                                coroutineScope.launch {
+                                    dateRange
+                                        .indexOfFirst { it.year == year && it.month == currentMonth }
+                                        .assertValidPageOrNull(pagerState)
+                                        .closestValidRange(
+                                            date = LocalDate.of(year, currentMonth, 1),
+                                            maxDate = currentMode.maxDate,
+                                            minDate = currentMode.minDate,
+                                            maxIndex = dateRange.count() - 1,
+                                        )
+                                        ?.let {
+                                            currentPagerDate = dateRange.toList()[it]
+                                            pagerState.scrollToPage(it)
+                                        }
+                                }
+                                isPickingYear = false
+                            },
+                            modifier = Modifier.height(minHeight)
+                        )
+                    }
+
+                    false -> {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            modifier = Modifier.height(minHeight),
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                DayOfWeek.values().forEach {
+                                    Text(
+                                        modifier = Modifier.weight(1f),
+                                        text = contentConfig.weekDaysMode.getText(it),
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = ColorScheme.dayOfWeek,
+                                    )
+                                }
+                            }
+
+                            HorizontalPager(
+                                count = totalPageCount,
+                                state = pagerState,
+                            ) { page ->
+                                val currentDate = getDateFromCurrentPage(page, dateRange)
+                                currentDate?.let {
+                                    // grid
+                                    CalendarGrid(
+                                        pagerDate = it.withDayOfMonth(1),
+                                        dateRange = dateRange,
+                                        mode = currentMode,
+                                        onSelected = setCurrentMode,
+                                        showCurrentMonthOnly = false,
+                                        calendarDayOption = contentConfig.calendarDayOption,
+                                    )
+                                }
                             }
                         }
                     }
@@ -301,37 +331,11 @@ private fun getDateFromCurrentPage(
 @Composable
 private fun Preview() {
     CalendarContent(
-        startDate = LocalDate.now(),
-        minDate = LocalDate.now(),
-        maxDate = LocalDate.MAX,
-        onSelected = {},
+        mode = CalendarMode.Single(
+            selectedDate = LocalDate.now(),
+            minDate = LocalDate.now(),
+            maxDate = LocalDate.MAX,
+        ),
+        onChanged = {},
     )
 }
-
-object CalendarDefaults {
-    fun defaultContentConfig(
-        showSelectedDateTitle: Boolean = true,
-    ) = CalendarContentConfig(
-        showSelectedDateTitle = showSelectedDateTitle,
-    )
-
-    @Composable
-    fun defaultColors(
-        monthChevronColor: Color = MaterialTheme.colorScheme.onPrimaryContainer,
-    ) = CalendarColors(
-        monthChevronColor = monthChevronColor,
-    )
-}
-
-/**
- * Configuration settings for [CalendarContent].
- *
- * @param showSelectedDateTitle should show title with the current date selection.
- */
-data class CalendarContentConfig(
-    val showSelectedDateTitle: Boolean,
-)
-
-data class CalendarColors(
-    val monthChevronColor: Color,
-)

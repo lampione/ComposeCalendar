@@ -26,6 +26,7 @@ import com.squaredem.composecalendar.daterange.DateRange
 import com.squaredem.composecalendar.daterange.DateRangeStep
 import com.squaredem.composecalendar.daterange.rangeTo
 import com.squaredem.composecalendar.model.DateWrapper
+import com.squaredem.composecalendar.model.DayOption
 import com.squaredem.composecalendar.utils.LogCompositions
 import java.time.LocalDate
 
@@ -33,8 +34,9 @@ import java.time.LocalDate
 internal fun CalendarGrid(
     pagerDate: LocalDate,
     dateRange: DateRange,
-    selectedDate: LocalDate,
-    onSelected: (LocalDate) -> Unit,
+    mode: CalendarMode,
+    onSelected: (CalendarMode) -> Unit,
+    calendarDayOption: ((LocalDate) -> DayOption)?,
     showCurrentMonthOnly: Boolean
 ) {
     LogCompositions("CalendarGrid")
@@ -52,12 +54,12 @@ internal fun CalendarGrid(
     val dates = (gridStartDay.rangeTo(gridEndDay) step DateRangeStep.Day()).map {
         val isCurrentMonth = it.month == pagerMonth
         val isCurrentDay = it == today
-        val isSelectedDay = it == selectedDate
         val isInDateRange = it in dateRange
 
         DateWrapper(
             localDate = it,
-            isSelectedDay = isSelectedDay,
+            isSelectedDay = mode.hasSelectionIndicator(it),
+            highlightedType = mode.highlightedTypeForDay(it),
             isCurrentDay = isCurrentDay,
             isCurrentMonth = isCurrentMonth,
             isInDateRange = isInDateRange,
@@ -67,7 +69,6 @@ internal fun CalendarGrid(
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
-        horizontalArrangement = Arrangement.spacedBy(gridSpacing),
         verticalArrangement = Arrangement.spacedBy(gridSpacing),
     ) {
         items(
@@ -77,7 +78,8 @@ internal fun CalendarGrid(
         ) {
             CalendarDay(
                 date = it,
-                onSelected = onSelected
+                onSelected = { day -> onSelected(mode.onSelectedDay(day)) },
+                dayOption = calendarDayOption?.invoke(it.localDate) ?: DayOption.Default,
             )
         }
     }

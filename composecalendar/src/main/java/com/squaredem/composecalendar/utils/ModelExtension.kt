@@ -1,6 +1,4 @@
 /*
- * Copyright 2022 Matteo Miceli
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,20 +12,23 @@
  * limitations under the License.
  */
 
-package com.squaredem.composecalendar.model
+package com.squaredem.composecalendar.utils
 
-import java.time.LocalDate
+import com.squaredem.composecalendar.model.WeekDaysMode
+import java.time.DayOfWeek
+import java.time.format.TextStyle
+import java.util.Locale
 
-internal data class DateWrapper(
-    val localDate: LocalDate,
-    val isSelectedDay: Boolean,
-    val highlightedType: HighlightedType?,
-    val isCurrentDay: Boolean,
-    val isCurrentMonth: Boolean,
-    val isInDateRange: Boolean,
-    val showCurrentMonthOnly: Boolean
-)
+internal fun WeekDaysMode.getText(day: DayOfWeek): String = when (this) {
+    WeekDaysMode.SingleLetter -> day.getDisplayName(
+        TextStyle.NARROW,
+        Locale.getDefault()
+    )
 
-internal enum class HighlightedType {
-    Start, End, Full;
+    WeekDaysMode.DoubleLetter -> {
+        day.getDisplayName(
+            TextStyle.SHORT_STANDALONE,
+            Locale.getDefault()
+        ).substring(0, 2)
+    }
 }

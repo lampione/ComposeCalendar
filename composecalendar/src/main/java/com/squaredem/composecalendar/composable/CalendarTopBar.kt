@@ -24,28 +24,52 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.squaredem.composecalendar.model.ColorScheme
 import com.squaredem.composecalendar.utils.LogCompositions
 import java.text.DateFormat
-import java.time.LocalDate
 import java.time.OffsetTime
 import java.util.*
 
 @Composable
-internal fun CalendarTopBar(selectedDate: LocalDate) {
+internal fun CalendarTopBar(mode: CalendarMode) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
     ) {
         LogCompositions("CalendarTopBar")
-
         val dateFormatter = DateFormat.getDateInstance(DateFormat.DEFAULT)
+        val text = when (mode) {
+            is CalendarMode.Range -> {
+                val startDate = (mode.selection?.startDate ?: mode.startDate)
+                    .atTime(OffsetTime.now()).toInstant().let {
+                        dateFormatter.format(Date.from(it))
+                    }
+                val endDate = mode.selection?.endDate?.atTime(OffsetTime.now())?.toInstant()?.let {
+                    dateFormatter.format(Date.from(it))
+                }
+
+                if (endDate != null) {
+                    "$startDate - $endDate"
+                } else {
+                    startDate
+                }
+            }
+
+            is CalendarMode.Single -> {
+                (mode.selectedDate ?: mode.startDate).atTime(OffsetTime.now()).toInstant().let {
+                    dateFormatter.format(Date.from(it))
+                }
+            }
+        }
+
         Text(
-            text = dateFormatter.format(
-                Date.from(selectedDate.atTime(OffsetTime.now()).toInstant())
-            ),
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onPrimaryContainer
+            text = text,
+            style = when (mode) {
+                is CalendarMode.Range -> MaterialTheme.typography.headlineMedium
+                is CalendarMode.Single -> MaterialTheme.typography.headlineLarge
+            },
+            color = ColorScheme.headerText,
         )
     }
 }

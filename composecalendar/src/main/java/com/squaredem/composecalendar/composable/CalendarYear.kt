@@ -16,11 +16,15 @@
 
 package com.squaredem.composecalendar.composable
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.dp
+import com.squaredem.composecalendar.model.ColorScheme
 import com.squaredem.composecalendar.utils.LogCompositions
 
 @Composable
@@ -33,19 +37,36 @@ internal fun CalendarYear(
     LogCompositions("CalendarYear")
 
     if (isSelectedYear) {
-        Button(onClick = {
-            setSelectedYear(year)
-        }) {
+        Button(
+            onClick = {
+                setSelectedYear(year)
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ColorScheme.yearPickerSelectedBackground,
+                contentColor = ColorScheme.yearPickerSelectedText,
+            ),
+        ) {
             Text("$year", maxLines = 1)
         }
     } else if (isCurrentYear) {
-        OutlinedButton(onClick = {
-            setSelectedYear(year)
-        }) {
+        OutlinedButton(
+            onClick = {
+                setSelectedYear(year)
+            },
+            border = BorderStroke(1.dp, ColorScheme.yearPickerCurrentYearHighlight),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = ColorScheme.yearPickerCurrentYearHighlight,
+            ),
+        ) {
             Text("$year", maxLines = 1)
         }
     } else {
-        TextButton(onClick = { setSelectedYear(year) }) {
+        TextButton(
+            onClick = { setSelectedYear(year) },
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = ColorScheme.yearPickerText,
+            ),
+        ) {
             Text("$year", maxLines = 1)
         }
     }

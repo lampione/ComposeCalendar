@@ -22,41 +22,47 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.squaredem.composecalendar.model.ColorScheme
 import com.squaredem.composecalendar.utils.LogCompositions
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.OffsetTime
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun CalendarMonthYearSelector(
     pagerDate: LocalDate,
+    dateFormat: String,
     onChipClicked: () -> Unit,
     onNextMonth: () -> Unit,
     onPreviousMonth: () -> Unit,
+    onGoToToday: () -> Unit,
     modifier: Modifier = Modifier,
     isNextMonthEnabled: Boolean = true,
     isPreviousMonthEnabled: Boolean = true,
     isMonthSelectorVisible: Boolean = true,
-    calendarColors: CalendarColors,
+    isTodayButtonVisible: Boolean = true,
 ) {
     LogCompositions("CalendarMonthYearSelector")
 
-    val pagerMonthFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
 
     Row(
         modifier = Modifier
@@ -64,46 +70,115 @@ internal fun CalendarMonthYearSelector(
             .then(modifier),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FilterChip(
-            label = {
-                Text(
-                    pagerMonthFormat.format(
-                        Date.from(pagerDate.atTime(OffsetTime.now()).toInstant())
-                    )
-                )
-            },
-            selected = false,
-            border = null,
-            trailingIcon = {
-                Icon(Icons.Default.ArrowDropDown, "ArrowDropDown")
-            },
-            onClick = onChipClicked,
+        YearPicker(
+            pagerDate = pagerDate,
+            dateFormat = dateFormat,
+            onChipClicked = onChipClicked,
         )
+
         Spacer(modifier = Modifier.weight(1F))
-        AnimatedVisibility(
-            visible = isMonthSelectorVisible,
-            enter = fadeIn(),
-            exit = fadeOut(),
+
+        MonthChevrons(
+            isVisible = isMonthSelectorVisible,
+            isNextMonthEnabled = isNextMonthEnabled,
+            isPreviousMonthEnabled = isPreviousMonthEnabled,
+            onNextMonth = onNextMonth,
+            onPreviousMonth = onPreviousMonth,
+        )
+
+        TodayButton(
+            isVisible = isTodayButtonVisible,
+            onGoToToday = onGoToToday,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun YearPicker(
+    pagerDate: LocalDate,
+    dateFormat: String,
+    onChipClicked: () -> Unit,
+) {
+    val pagerMonthFormat = SimpleDateFormat(dateFormat, Locale.getDefault())
+
+    FilterChip(
+        label = {
+            Text(
+                text = pagerMonthFormat.format(
+                    Date.from(pagerDate.atTime(OffsetTime.now()).toInstant())
+                ),
+                color = ColorScheme.yearPickerTitleHighlight,
+            )
+        },
+        selected = false,
+        border = null,
+        trailingIcon = {
+            Icon(
+                imageVector = Icons.Default.ArrowDropDown,
+                contentDescription = "ArrowDropDown",
+                tint = ColorScheme.yearPickerTitleHighlight
+            )
+        },
+        onClick = onChipClicked,
+    )
+}
+
+@Composable
+private fun TodayButton(
+    isVisible: Boolean,
+    onGoToToday: () -> Unit,
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        TextButton(
+            onClick = { onGoToToday() },
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = ColorScheme.todayButtonText,
+            )
         ) {
-            Row {
-                IconButton(
-                    onClick = onPreviousMonth,
-                    enabled = isPreviousMonthEnabled,
-                    colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = calendarColors.monthChevronColor
-                    )
-                ) {
-                    Icon(Icons.Default.ChevronLeft, "ChevronLeft")
-                }
-                IconButton(
-                    onClick = onNextMonth,
-                    enabled = isNextMonthEnabled,
-                    colors = IconButtonDefaults.iconButtonColors(
-                        contentColor = calendarColors.monthChevronColor
-                    )
-                ) {
-                    Icon(Icons.Default.ChevronRight, "ChevronRight")
-                }
+            Text("Today")
+        }
+    }
+}
+
+@Composable
+private fun MonthChevrons(
+    isVisible: Boolean,
+    isNextMonthEnabled: Boolean = true,
+    isPreviousMonthEnabled: Boolean = true,
+    onNextMonth: () -> Unit,
+    onPreviousMonth: () -> Unit,
+) {
+    AnimatedVisibility(
+        visible = isVisible,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            IconButton(
+                onClick = onPreviousMonth,
+                enabled = isPreviousMonthEnabled,
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = ColorScheme.monthChevron
+                ),
+                modifier = Modifier.padding(0.dp),
+            ) {
+                Icon(Icons.Default.ChevronLeft, "ChevronLeft", Modifier.size(16.dp))
+            }
+            IconButton(
+                onClick = onNextMonth,
+                enabled = isNextMonthEnabled,
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = ColorScheme.monthChevron
+                )
+            ) {
+                Icon(Icons.Default.ChevronRight, "ChevronRight", Modifier.size(16.dp))
             }
         }
     }
