@@ -27,9 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.squaredem.composecalendar.ComposeRangeCalendar
 import com.squaredem.composecalendar.RangeDatePicker
-import com.squaredem.composecalendar.composable.DateRangeSelection
+import com.squaredem.composecalendar.model.DateRangeSelection
 import com.squaredem.composecalendar.model.CalendarDefaults
+import com.squaredem.composecalendar.model.CalendarMode
 import com.squaredem.composecalendar.model.DayOption
+import com.squaredem.composecalendar.model.DefaultTitleFormatters
 import com.squaredem.composecalendar.model.ExtraButtonHelperType
 import com.squaredem.composecalendar.model.WeekDaysMode
 import java.time.DayOfWeek
@@ -56,7 +58,9 @@ private fun MainActivityContent() {
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        var calendarMode: CalendarMode by rememberSaveable { mutableStateOf(CalendarMode.Hidden) }
+        var calendarMode: CalendarDisplayMode by rememberSaveable {
+            mutableStateOf(CalendarDisplayMode.Hidden)
+        }
         var selectedDateText by rememberSaveable { mutableStateOf<String?>(null) }
         var selectedDate by rememberSaveable { mutableStateOf<LocalDate?>(null) }
         var selectedRange by remember { mutableStateOf<DateRangeSelection?>(null) }
@@ -72,23 +76,23 @@ private fun MainActivityContent() {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Button(onClick = { calendarMode = CalendarMode.Popup }) {
+                Button(onClick = { calendarMode = CalendarDisplayMode.Popup }) {
                     Text("Show dialog")
                 }
 
-                Button(onClick = { calendarMode = CalendarMode.InPlace }) {
+                Button(onClick = { calendarMode = CalendarDisplayMode.InPlace }) {
                     Text("Show in-place")
                 }
             }
 
             AnimatedVisibility(
-                visible = calendarMode == CalendarMode.InPlace,
+                visible = calendarMode == CalendarDisplayMode.InPlace,
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     RangeDatePicker(
-                        mode = com.squaredem.composecalendar.composable.CalendarMode.Range(
+                        mode = CalendarMode.Range(
                             minDate = LocalDate.now().minusMonths(2),
                             maxDate = LocalDate.MAX,
                             selection = selectedRange,
@@ -118,15 +122,15 @@ private fun MainActivityContent() {
                         ),
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
-                    
-                    Button(onClick = { calendarMode = CalendarMode.Hidden }) {
+
+                    Button(onClick = { calendarMode = CalendarDisplayMode.Hidden }) {
                         Text(text = "Dismiss")
                     }
                 }
             }
         }
 
-        if (calendarMode == CalendarMode.Popup) {
+        if (calendarMode == CalendarDisplayMode.Popup) {
             // Range popup.
             ComposeRangeCalendar(
                 initialSelection = selectedRange,
@@ -135,9 +139,15 @@ private fun MainActivityContent() {
                 onDone = {
                     selectedRange = it
                     selectedDateText = generateSelectionText(it)
-                    calendarMode = CalendarMode.Hidden
+                    calendarMode = CalendarDisplayMode.Hidden
                 },
-                onDismiss = { calendarMode = CalendarMode.Hidden }
+                onDismiss = { calendarMode = CalendarDisplayMode.Hidden },
+                titleFormatter = DefaultTitleFormatters.dateRange(
+                    dateFormat = "dd MMM yyyy",
+                    dateFormatWithoutYear = "dd MMM",
+                    emptyTitle = "Selected range",
+                    dateJoiner = " -> ",
+                )
             )
 
             // Single date popup.
@@ -149,9 +159,9 @@ private fun MainActivityContent() {
                 onDone = {
                     selectedDate = it
                     selectedDateText = it.toString()
-                    calendarMode = CalendarMode.Hidden
+                    calendarMode = CalendarDisplayMode.Hidden
                 },
-                onDismiss = { calendarMode = CalendarMode.Hidden }
+                onDismiss = { calendarMode = CalendarDisplayMode.Hidden }
             )
             */
         }
@@ -180,7 +190,7 @@ private fun DefaultPreview() {
     }
 }
 
-enum class CalendarMode {
+enum class CalendarDisplayMode {
     Hidden,
     Popup,
     InPlace,
