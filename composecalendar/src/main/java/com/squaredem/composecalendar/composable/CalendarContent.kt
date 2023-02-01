@@ -134,6 +134,7 @@ internal fun CalendarContent(
             val scope = rememberCoroutineScope()
             CalendarMonthYearSelector(
                 pagerDate = currentPagerDate,
+                dateFormat = contentConfig.calendarYearPickerFormat,
                 onChipClicked = { isPickingYear = !isPickingYear },
                 onNextMonth = {
                     coroutineScope.launch {

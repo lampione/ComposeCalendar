@@ -22,12 +22,14 @@ import java.time.LocalDate
  * @param showSelectedDateTitle should show title with the current date selection.
  * @param extraButtonHelper which helper button should be shown.
  * @param calendarDayOption should apply different options for specific days.
+ * @param calendarYearPickerFormat date format to show on the date picker placeholder.
  */
 data class CalendarContentConfig(
     val showSelectedDateTitle: Boolean,
     val extraButtonHelper: ExtraButtonHelperType?,
     val weekDaysMode: WeekDaysMode,
     val calendarDayOption: ((LocalDate) -> DayOption)?,
+    val calendarYearPickerFormat: String,
 )
 
 sealed class DayOption {

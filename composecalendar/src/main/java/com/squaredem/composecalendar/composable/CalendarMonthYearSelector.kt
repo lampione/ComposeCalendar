@@ -50,6 +50,7 @@ import java.util.*
 @Composable
 internal fun CalendarMonthYearSelector(
     pagerDate: LocalDate,
+    dateFormat: String,
     onChipClicked: () -> Unit,
     onNextMonth: () -> Unit,
     onPreviousMonth: () -> Unit,
@@ -71,6 +72,7 @@ internal fun CalendarMonthYearSelector(
     ) {
         YearPicker(
             pagerDate = pagerDate,
+            dateFormat = dateFormat,
             onChipClicked = onChipClicked,
         )
 
@@ -95,9 +97,10 @@ internal fun CalendarMonthYearSelector(
 @Composable
 private fun YearPicker(
     pagerDate: LocalDate,
+    dateFormat: String,
     onChipClicked: () -> Unit,
 ) {
-    val pagerMonthFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+    val pagerMonthFormat = SimpleDateFormat(dateFormat, Locale.getDefault())
 
     FilterChip(
         label = {

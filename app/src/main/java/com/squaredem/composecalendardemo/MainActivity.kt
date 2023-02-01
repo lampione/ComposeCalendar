@@ -99,6 +99,7 @@ private fun MainActivityContent() {
                         },
                         contentConfig = CalendarDefaults.defaultContentConfig(
                             showSelectedDateTitle = false,
+                            calendarYearPickerFormat = "MMM YY",
                             weekdaysMode = WeekDaysMode.DoubleLetter,
                             extraButtonHelper = ExtraButtonHelperType.Today,
                             calendarDayOption = {

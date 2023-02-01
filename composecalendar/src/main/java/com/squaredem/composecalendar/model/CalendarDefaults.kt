@@ -25,11 +25,13 @@ object CalendarDefaults {
         extraButtonHelper: ExtraButtonHelperType = ExtraButtonHelperType.MonthChevrons,
         calendarDayOption: ((LocalDate) -> DayOption)? = null,
         weekdaysMode: WeekDaysMode = WeekDaysMode.SingleLetter,
+        calendarYearPickerFormat: String = "MMMM yyyy",
     ) = CalendarContentConfig(
         showSelectedDateTitle = showSelectedDateTitle,
         extraButtonHelper = extraButtonHelper,
         calendarDayOption = calendarDayOption,
         weekDaysMode = weekdaysMode,
+        calendarYearPickerFormat = calendarYearPickerFormat,
     )
 
     @Composable
