@@ -15,8 +15,12 @@
 package com.squaredem.composecalendar.utils
 
 import com.squaredem.composecalendar.model.WeekDaysMode
+import java.text.SimpleDateFormat
 import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.OffsetTime
 import java.time.format.TextStyle
+import java.util.Date
 import java.util.Locale
 
 internal fun WeekDaysMode.getText(day: DayOfWeek): String = when (this) {
@@ -32,3 +36,8 @@ internal fun WeekDaysMode.getText(day: DayOfWeek): String = when (this) {
         ).substring(0, 2)
     }
 }
+
+internal fun LocalDate.formatWithFormatter(
+    formatter: SimpleDateFormat,
+    time: OffsetTime = OffsetTime.now(),
+) = atTime(time).toInstant().let { formatter.format(Date.from(it)) }

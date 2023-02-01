@@ -17,7 +17,7 @@ package com.squaredem.composecalendar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.squaredem.composecalendar.composable.CalendarContent
-import com.squaredem.composecalendar.composable.CalendarMode
+import com.squaredem.composecalendar.model.CalendarMode
 import com.squaredem.composecalendar.model.CalendarColors
 import com.squaredem.composecalendar.model.CalendarContentConfig
 import com.squaredem.composecalendar.model.CalendarDefaults

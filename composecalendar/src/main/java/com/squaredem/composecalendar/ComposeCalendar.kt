@@ -23,10 +23,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
-import com.squaredem.composecalendar.composable.CalendarMode
+import com.squaredem.composecalendar.model.CalendarMode
 import com.squaredem.composecalendar.model.CalendarColors
 import com.squaredem.composecalendar.model.CalendarContentConfig
 import com.squaredem.composecalendar.model.CalendarDefaults
+import com.squaredem.composecalendar.model.DefaultTitleFormatters
 import java.time.LocalDate
 
 /**
@@ -41,6 +42,7 @@ fun ComposeCalendar(
     onDismiss: () -> Unit,
     contentConfig: CalendarContentConfig = CalendarDefaults.defaultContentConfig(),
     calendarColors: CalendarColors = CalendarDefaults.defaultColors(),
+    titleFormatter: (LocalDate?) -> String = DefaultTitleFormatters.singleDate(),
 ) {
     val selectedDate = remember { mutableStateOf(startDate) }
 
@@ -64,6 +66,7 @@ fun ComposeCalendar(
                     selectedDate = startDate,
                     minDate = minDate,
                     maxDate = maxDate,
+                    titleFormatter = titleFormatter,
                 ),
                 onChanged = {
                     selectedDate.value = it.selectedDate ?: it.startDate

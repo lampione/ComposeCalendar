@@ -23,11 +23,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
-import com.squaredem.composecalendar.composable.CalendarMode
-import com.squaredem.composecalendar.composable.DateRangeSelection
+import com.squaredem.composecalendar.model.CalendarMode
+import com.squaredem.composecalendar.model.DateRangeSelection
 import com.squaredem.composecalendar.model.CalendarColors
 import com.squaredem.composecalendar.model.CalendarContentConfig
 import com.squaredem.composecalendar.model.CalendarDefaults
+import com.squaredem.composecalendar.model.DefaultTitleFormatters
 import java.time.LocalDate
 
 /**
@@ -42,6 +43,7 @@ fun ComposeRangeCalendar(
     initialSelection: DateRangeSelection? = null,
     contentConfig: CalendarContentConfig = CalendarDefaults.defaultContentConfig(),
     calendarColors: CalendarColors = CalendarDefaults.defaultColors(),
+    titleFormatter: (DateRangeSelection?) -> String = DefaultTitleFormatters.dateRange(),
 ) {
     var selectedDate by remember { mutableStateOf(initialSelection) }
 
@@ -68,6 +70,7 @@ fun ComposeRangeCalendar(
                     selection = selectedDate,
                     minDate = minDate,
                     maxDate = maxDate,
+                    titleFormatter = titleFormatter,
                 ),
                 onChanged = {
                     selectedDate = it.selection

@@ -12,9 +12,8 @@
  * limitations under the License.
  */
 
-package com.squaredem.composecalendar.composable
+package com.squaredem.composecalendar.model
 
-import com.squaredem.composecalendar.model.HighlightedType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
@@ -46,12 +45,14 @@ sealed class CalendarMode {
         override val minDate: LocalDate,
         override val maxDate: LocalDate,
         val selectedDate: LocalDate? = null,
+        val titleFormatter: (LocalDate?) -> String = DefaultTitleFormatters.singleDate(),
     ) : CalendarMode()
 
     data class Range(
         override val minDate: LocalDate,
         override val maxDate: LocalDate,
         val selection: DateRangeSelection? = null,
+        val titleFormatter: (DateRangeSelection?) -> String = DefaultTitleFormatters.dateRange(),
     ) : CalendarMode()
 }
 

@@ -50,6 +50,7 @@ import com.squaredem.composecalendar.daterange.rangeTo
 import com.squaredem.composecalendar.model.CalendarColors
 import com.squaredem.composecalendar.model.CalendarContentConfig
 import com.squaredem.composecalendar.model.CalendarDefaults
+import com.squaredem.composecalendar.model.CalendarMode
 import com.squaredem.composecalendar.model.ColorScheme
 import com.squaredem.composecalendar.model.ExtraButtonHelperType
 import com.squaredem.composecalendar.model.LocalCalendarColorScheme

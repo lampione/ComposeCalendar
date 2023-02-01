@@ -25,8 +25,11 @@ import androidx.compose.ui.unit.dp
 import com.squaredem.composecalendar.daterange.DateRange
 import com.squaredem.composecalendar.daterange.DateRangeStep
 import com.squaredem.composecalendar.daterange.rangeTo
+import com.squaredem.composecalendar.model.CalendarMode
 import com.squaredem.composecalendar.model.DateWrapper
 import com.squaredem.composecalendar.model.DayOption
+import com.squaredem.composecalendar.model.hasSelectionIndicator
+import com.squaredem.composecalendar.model.highlightedTypeForDay
 import com.squaredem.composecalendar.utils.LogCompositions
 import java.time.LocalDate
 
