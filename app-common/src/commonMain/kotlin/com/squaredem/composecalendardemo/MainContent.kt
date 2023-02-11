@@ -65,8 +65,8 @@ fun MainContent() {
                     showDialog.value = false
                 },
                 onDismiss = { showDialog.value = false },
-                minDate = LocalDate(2000, 5, 10),
-                maxDate = Clock.System.todayIn(TimeZone.currentSystemDefault()).minus(10, DateTimeUnit.YEAR)
+                minDate = LocalDate(2023, 1, 31),
+                maxDate = LocalDate(2023, 2, 11)
             )
         }
 

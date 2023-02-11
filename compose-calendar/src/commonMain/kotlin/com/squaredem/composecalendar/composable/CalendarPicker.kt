@@ -50,18 +50,19 @@ internal fun CalendarPicker(
 ) {
     LogCompositions("CalendarContent")
 
-    val dateRangeByMonth = DateRange(minDate, maxDate, DateRangeStep.MONTH)
-    val dateRangeByYear = minDate.year..maxDate.year
-    val monthPageCount = dateRangeByMonth.count()
+    val dateRange = DateRange(minDate, maxDate)
+    val monthRange = DateRange(minDate.withDayOfMonth(1), maxDate.withDayOfMonth(1), DateRangeStep.MONTH)
+    val yearRange = minDate.year..maxDate.year
+    val monthPageCount = monthRange.count()
     val currentDate = Clock.System.todayIn(TimeZone.currentSystemDefault()).coerceIn(minDate, maxDate)
 
-    val initialPage = remember { getStartPage(selectedDate ?: currentDate, dateRangeByMonth, monthPageCount) }
+    val initialPage = remember { getStartPage(selectedDate ?: currentDate, monthRange, monthPageCount) }
     val pagerState = rememberPagerState(initialPage)
     // for display only, used in CalendarMonthYearSelector
     var currentPagerDate by remember { mutableStateOf(selectedDate ?: currentDate) }
 
     var isPickingYear by remember { mutableStateOf(false) }
-    val gridState = with(dateRangeByYear.indexOfFirst { it == currentPagerDate.year }) {
+    val gridState = with(yearRange.indexOfFirst { it == currentPagerDate.year }) {
         rememberLazyGridState(initialFirstVisibleItemIndex = this)
     }
 
@@ -70,7 +71,7 @@ internal fun CalendarPicker(
     if (!LocalInspectionMode.current) {
         LaunchedEffect(pagerState) {
             snapshotFlow { pagerState.currentPage }.collect { page ->
-                getDateFromCurrentPage(page, dateRangeByMonth)?.let {
+                getDateFromCurrentPage(page, monthRange)?.let {
                     currentPagerDate = it
                 }
             }
@@ -83,6 +84,8 @@ internal fun CalendarPicker(
         CalendarMonthYearSelector(
             currentPagerDate,
             onClick = { isPickingYear = !isPickingYear },
+            hasPreviousMonth = pagerState.currentPage > 0,
+            hasNextMonth = pagerState.currentPage < pagerState.pageCount - 1,
             onNextMonth = {
                 coroutineScope.launch {
                     try {
@@ -109,7 +112,6 @@ internal fun CalendarPicker(
         Spacer(Modifier.height(16.dp).background(Color.Red))
 
         if (!isPickingYear) {
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -131,14 +133,14 @@ internal fun CalendarPicker(
                 count = monthPageCount,
                 state = pagerState
             ) { page ->
-                getDateFromCurrentPage(page, dateRangeByMonth)?.let { pagerDate ->
+                getDateFromCurrentPage(page, monthRange)?.let { pagerDate ->
                     // grid
                     CalendarGrid(
                         pagerDate = pagerDate.withDayOfMonth(1),
-                        dateRange = dateRangeByMonth,
+                        dateRange = dateRange,
                         selectedDate = selectedDate,
                         onSelected = { date ->
-                            val index = dateRangeByYear.indexOfFirst { it == date.year }
+                            val index = yearRange.indexOfFirst { it == date.year }
                             if (index > 0) {
                                 coroutineScope.launch {
                                     gridState.scrollToItem(index)
@@ -155,14 +157,14 @@ internal fun CalendarPicker(
 
             CalendarYearGrid(
                 gridState = gridState,
-                dateRangeByYear = dateRangeByYear,
+                dateRangeByYear = yearRange,
                 selectedYear = selectedDate?.year,
                 onYearClick = { year ->
                     currentPagerDate = currentPagerDate.withYear(year)
                     selectedDate?.let { onSelected(it.withYear(year)) }
                     isPickingYear = false
                     coroutineScope.launch {
-                        val newPage = dateRangeByMonth.indexOfFirst {
+                        val newPage = monthRange.indexOfFirst {
                             it.year == year && it.month == currentPagerDate.month
                         }
                         pagerState.scrollToPage(newPage)

@@ -20,14 +20,22 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -45,6 +53,8 @@ import kotlinx.datetime.LocalDate
 internal fun CalendarMonthYearSelector(
     pagerDate: LocalDate,
     onClick: () -> Unit,
+    hasNextMonth: Boolean,
+    hasPreviousMonth: Boolean,
     onNextMonth: () -> Unit,
     onPreviousMonth: () -> Unit,
     expanded: Boolean,
@@ -78,10 +88,16 @@ internal fun CalendarMonthYearSelector(
             }
         }
         Spacer(modifier = Modifier.weight(1F))
-        IconButton(onClick = onPreviousMonth) {
+        IconButton(
+            onClick = onPreviousMonth,
+            enabled = hasPreviousMonth,
+        ) {
             Icon(Icons.Default.ChevronLeft, "ChevronLeft", Modifier.size(24.dp))
         }
-        IconButton(onClick = onNextMonth) {
+        IconButton(
+            onClick = onNextMonth,
+            enabled = hasNextMonth,
+        ) {
             Icon(Icons.Default.ChevronRight, "ChevronRight", Modifier.size(24.dp))
         }
     }
