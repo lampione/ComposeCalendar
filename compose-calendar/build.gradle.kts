@@ -77,7 +77,7 @@ val localProperties = Properties().apply {
 }
 
 group = localProperties.getProperty("group", "com.squaredem")
-version = "1.0.7"
+version = project.findProperty("compose-calendar.version")!!
 
 configure<com.vanniktech.maven.publish.MavenPublishBaseExtension> {
     configure(
