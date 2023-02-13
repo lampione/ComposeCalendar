@@ -1,6 +1,14 @@
 # ComposeCalendar
 
-This library provides a beautiful date picker for Jetpack Compose, following the latest material 3 guidelines.
+This library provides a beautiful date picker for Jetpack Compose, following the latest material 3
+guidelines.
+
+<details>
+  <summary>Expand range calendar demo</summary>
+
+![demo](docs/mp4/demo.mp4)
+
+</details>
 
 <img src="docs/screenshots/daymonth.png" width="40%" />
 <img src="docs/screenshots/year.png" width="40%" />
