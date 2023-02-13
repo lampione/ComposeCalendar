@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
  * @param yearPickerCurrentYearHighlight color of the highlight circle and text for the current year.
  * @param dayOfWeek text color of the week days text.
  * @param headerText text color of the current selected date title.
+ * @param dividerColor color for the calendar dividers.
  */
 data class CalendarColors(
     val monthChevron: Color,
@@ -54,6 +55,7 @@ data class CalendarColors(
     val yearPickerCurrentYearHighlight: Color,
     val dayOfWeek: Color,
     val headerText: Color,
+    val dividerColor: Color,
 )
 
 internal val ColorScheme: CalendarColors
@@ -80,4 +82,5 @@ internal fun initialCalendarColors(): CalendarColors = CalendarColors(
     yearPickerCurrentYearHighlight = Color.Blue,
     dayOfWeek = Color.Black,
     headerText = Color.Black,
+    dividerColor = Color.Black,
 )

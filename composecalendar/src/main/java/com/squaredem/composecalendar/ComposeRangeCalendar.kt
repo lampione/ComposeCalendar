@@ -46,7 +46,16 @@ fun ComposeRangeCalendar(
     titleFormatter: (DateRangeSelection?) -> String = DefaultTitleFormatters.dateRange(),
 ) {
     var selectedDate by remember { mutableStateOf(initialSelection) }
-
+    var mode by remember {
+        mutableStateOf(
+            CalendarMode.Range(
+                selection = selectedDate,
+                minDate = minDate,
+                maxDate = maxDate,
+                titleFormatter = titleFormatter,
+            )
+        )
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
@@ -66,13 +75,9 @@ fun ComposeRangeCalendar(
         },
         text = {
             RangeDatePicker(
-                mode = CalendarMode.Range(
-                    selection = selectedDate,
-                    minDate = minDate,
-                    maxDate = maxDate,
-                    titleFormatter = titleFormatter,
-                ),
+                mode = mode,
                 onChanged = {
+                    mode = it
                     selectedDate = it.selection
                 },
                 contentConfig = contentConfig,
