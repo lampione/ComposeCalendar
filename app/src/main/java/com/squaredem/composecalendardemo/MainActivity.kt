@@ -4,11 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -27,12 +29,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.squaredem.composecalendar.ComposeRangeCalendar
 import com.squaredem.composecalendar.RangeDatePicker
+import com.squaredem.composecalendar.SelectedDateView
 import com.squaredem.composecalendar.model.DateRangeSelection
 import com.squaredem.composecalendar.model.CalendarDefaults
 import com.squaredem.composecalendar.model.CalendarMode
 import com.squaredem.composecalendar.model.DayOption
 import com.squaredem.composecalendar.model.DefaultTitleFormatters
 import com.squaredem.composecalendar.model.ExtraButtonHelperType
+import com.squaredem.composecalendar.model.ForcedSelectMode
 import com.squaredem.composecalendar.model.WeekDaysMode
 import java.time.DayOfWeek
 
@@ -62,7 +66,6 @@ private fun MainActivityContent() {
             mutableStateOf(CalendarDisplayMode.Hidden)
         }
         var selectedDateText by rememberSaveable { mutableStateOf<String?>(null) }
-        var selectedDate by rememberSaveable { mutableStateOf<LocalDate?>(null) }
         var selectedRange by remember { mutableStateOf<DateRangeSelection?>(null) }
 
         Column(
@@ -85,39 +88,95 @@ private fun MainActivityContent() {
                 }
             }
 
+            var mode by remember {
+                mutableStateOf(
+                    CalendarMode.Range(
+                        minDate = LocalDate.now().minusMonths(2),
+                        maxDate = LocalDate.MAX,
+                        selection = null,
+                    )
+                )
+            }
+            var calendarConfig by remember {
+                mutableStateOf(
+                    CalendarDefaults.defaultContentConfig(
+                        showSelectedDateTitle = false,
+                        calendarYearPickerFormat = "MMM YY",
+                        weekdaysMode = WeekDaysMode.DoubleLetter,
+                        extraButtonHelper = ExtraButtonHelperType.Today,
+                        hasDividers = true,
+                        calendarDayOption = {
+                            // Example of a filter for days.
+                            when (it.dayOfWeek) {
+                                in listOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY) -> {
+                                    DayOption.Disabled(true)
+                                }
+
+                                else -> DayOption.Default
+                            }
+                        }
+                    )
+                )
+            }
             AnimatedVisibility(
                 visible = calendarMode == CalendarDisplayMode.InPlace,
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
-                    RangeDatePicker(
-                        mode = CalendarMode.Range(
-                            minDate = LocalDate.now().minusMonths(2),
-                            maxDate = LocalDate.MAX,
-                            selection = selectedRange,
-                        ),
-                        onChanged = {
-                            selectedRange = it.selection
-                            selectedDateText = generateSelectionText(it.selection)
-                        },
-                        contentConfig = CalendarDefaults.defaultContentConfig(
-                            showSelectedDateTitle = false,
-                            calendarYearPickerFormat = "MMM YY",
-                            weekdaysMode = WeekDaysMode.DoubleLetter,
-                            extraButtonHelper = ExtraButtonHelperType.Today,
-                            hasDividers = true,
-                            calendarDayOption = {
-                                // Example of a filter for days.
-                                when (it.dayOfWeek) {
-                                    in listOf(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY) -> {
-                                        DayOption.Disabled(true)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        SelectedDateView(
+                            value = mode.selection?.startDate,
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    if (mode.selectionMode == ForcedSelectMode.EndDate) {
+                                        mode = mode.copy(
+                                            selectionMode = ForcedSelectMode.StartDate,
+                                        )
+                                    } else {
+                                        calendarConfig = calendarConfig.copy(
+                                            currentPagerDate = mode.selection?.startDate,
+                                        )
                                     }
+                                },
+                            highlighted = mode.selectionMode == ForcedSelectMode.StartDate,
+                            label = "Start date",
+                        )
 
-                                    else -> DayOption.Default
-                                }
-                            }
-                        ),
+                        val endDate = mode.selection?.endDate ?: mode.selection?.startDate
+                        SelectedDateView(
+                            value = endDate,
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable {
+                                    if (mode.selection != null && mode.selectionMode == ForcedSelectMode.StartDate) {
+                                        mode = mode.copy(
+                                            selectionMode = ForcedSelectMode.EndDate,
+                                        )
+                                    } else {
+                                        calendarConfig = calendarConfig.copy(
+                                            currentPagerDate = endDate,
+                                        )
+                                    }
+                                },
+                            highlighted = mode.selectionMode == ForcedSelectMode.EndDate,
+                            label = "End date",
+                        )
+                    }
+
+                    RangeDatePicker(
+                        mode = mode,
+                        onChanged = {
+                            mode = it
+                        },
+                        contentConfig = calendarConfig,
                         calendarColors = CalendarDefaults.defaultColors(
                             monthChevron = MaterialTheme.colorScheme.primary
                         ),
