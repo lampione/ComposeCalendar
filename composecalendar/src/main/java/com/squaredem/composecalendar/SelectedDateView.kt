@@ -27,14 +27,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.EditCalendar
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.squaredem.composecalendar.model.SelectedDateViewColors
+import com.squaredem.composecalendar.model.SelectedDateViewConfig
+import com.squaredem.composecalendar.model.SelectedDateViewDefaults
+import com.squaredem.composecalendar.model.SelectedDateViewTextStyles
 import com.squaredem.composecalendar.utils.formatWithFormatter
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -47,8 +48,11 @@ fun SelectedDateView(
     highlighted: Boolean = false,
     label: String? = null,
     hint: String? = null,
+    config: SelectedDateViewConfig = SelectedDateViewDefaults.defaultConfig(),
+    colors: SelectedDateViewColors = SelectedDateViewDefaults.defaultColors(),
+    textStyles: SelectedDateViewTextStyles = SelectedDateViewDefaults.defaultTextStyles(),
     leadingIcon: @Composable () -> Unit = {
-        Icon(Icons.Outlined.EditCalendar, contentDescription = "day")
+        Icon(Icons.Outlined.EditCalendar, contentDescription = "day", tint = colors.iconTint)
     }
 ) {
     val labelText = when {
@@ -64,7 +68,7 @@ fun SelectedDateView(
 
     val dateText = when {
         value != null -> value.formatWithFormatter(
-            formatter = SimpleDateFormat("EEE, MMM dd", Locale.getDefault())
+            formatter = SimpleDateFormat(config.dateFormat, Locale.getDefault())
         )
 
         else -> ""
@@ -79,8 +83,7 @@ fun SelectedDateView(
             ) {
                 Text(
                     text = labelText,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight(400),
+                    style = textStyles.label,
                 )
             }
         }
@@ -105,8 +108,7 @@ fun SelectedDateView(
                 ) {
                     Text(
                         text = dateText,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight(400),
+                        style = textStyles.value,
                     )
                 }
 
@@ -118,8 +120,7 @@ fun SelectedDateView(
                 ) {
                     Text(
                         text = hintText,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight(300),
+                        style = textStyles.hint,
                     )
                 }
             }
@@ -134,7 +135,7 @@ fun SelectedDateView(
                 Divider(
                     modifier = Modifier.fillMaxWidth(),
                     thickness = 2.dp,
-                    color = MaterialTheme.colorScheme.primary
+                    color = colors.highlightColor,
                 )
             }
 
@@ -146,7 +147,7 @@ fun SelectedDateView(
                 Divider(
                     modifier = Modifier.fillMaxWidth(),
                     thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)
+                    color = colors.neutralColor,
                 )
             }
         }
