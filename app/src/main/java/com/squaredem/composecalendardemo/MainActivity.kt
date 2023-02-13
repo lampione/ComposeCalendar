@@ -106,6 +106,7 @@ private fun MainActivityContent() {
                             calendarYearPickerFormat = "MMM YY",
                             weekdaysMode = WeekDaysMode.DoubleLetter,
                             extraButtonHelper = ExtraButtonHelperType.Today,
+                            hasDividers = true,
                             calendarDayOption = {
                                 // Example of a filter for days.
                                 when (it.dayOfWeek) {

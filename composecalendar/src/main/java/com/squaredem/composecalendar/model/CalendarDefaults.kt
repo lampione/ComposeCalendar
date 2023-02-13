@@ -26,12 +26,16 @@ object CalendarDefaults {
         calendarDayOption: ((LocalDate) -> DayOption)? = null,
         weekdaysMode: WeekDaysMode = WeekDaysMode.SingleLetter,
         calendarYearPickerFormat: String = "MMMM yyyy",
+        currentPagerDate: LocalDate? = null,
+        hasDividers: Boolean = false,
     ) = CalendarContentConfig(
         showSelectedDateTitle = showSelectedDateTitle,
         extraButtonHelper = extraButtonHelper,
         calendarDayOption = calendarDayOption,
         weekDaysMode = weekdaysMode,
         calendarYearPickerFormat = calendarYearPickerFormat,
+        currentPagerDate = currentPagerDate,
+        hasDividers = hasDividers,
     )
 
     @Composable
@@ -52,6 +56,7 @@ object CalendarDefaults {
         yearPickerCurrentYearHighlight: Color = MaterialTheme.colorScheme.primary,
         dayOfWeek: Color = MaterialTheme.colorScheme.onPrimaryContainer,
         headerText: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+        dividerColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f),
     ) = CalendarColors(
         monthChevron = monthChevron,
         defaultText = defaultText,
@@ -69,5 +74,6 @@ object CalendarDefaults {
         yearPickerCurrentYearHighlight = yearPickerCurrentYearHighlight,
         dayOfWeek = dayOfWeek,
         headerText = headerText,
+        dividerColor = dividerColor,
     )
 }

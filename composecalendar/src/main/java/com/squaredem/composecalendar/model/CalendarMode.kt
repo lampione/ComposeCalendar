@@ -53,68 +53,76 @@ sealed class CalendarMode {
         override val maxDate: LocalDate,
         val selection: DateRangeSelection? = null,
         val titleFormatter: (DateRangeSelection?) -> String = DefaultTitleFormatters.dateRange(),
+        val selectionMode: ForcedSelectMode = ForcedSelectMode.StartDate,
     ) : CalendarMode()
 }
 
 internal fun CalendarMode.Range.onDayClicked(day: LocalDate): CalendarMode.Range = when {
     selection == null -> {
-        copy(selection = DateRangeSelection(day))
-    }
-
-    day == selection.startDate && selection.endDate == null -> {
         copy(
-            selection = null
+            selection = DateRangeSelection(day),
+            selectionMode = ForcedSelectMode.EndDate,
         )
     }
 
-    day.isBefore(selection.startDate) && selection.endDate == null -> {
-        copy(
-            selection = selection.copy(
-                startDate = day,
-                endDate = selection.startDate
-            ),
-        )
-    }
-
-    day.isBefore(selection.startDate) -> {
-        copy(
-            selection = selection.copy(startDate = day),
-        )
-    }
-
-    selection.endDate == null || day.isAfter(selection.endDate) -> {
-        copy(
-            selection = selection.copy(endDate = day),
-        )
-    }
-
-    selection.startDate == day -> {
-        copy(
-            selection = DateRangeSelection(
-                startDate = selection.endDate
+    selectionMode == ForcedSelectMode.StartDate -> {
+        when {
+            selection.endDate == null && day.isAfter(selection.startDate) -> copy(
+                selection = DateRangeSelection(day),
+                selectionMode = ForcedSelectMode.EndDate
             )
-        )
-    }
 
-    selection.endDate == day -> {
-        copy(
-            selection = DateRangeSelection(
-                startDate = selection.startDate
+            selection.endDate == null && day.isBefore(selection.startDate) -> copy(
+                selection = DateRangeSelection(day, startDate),
+                selectionMode = ForcedSelectMode.EndDate
             )
-        )
-    }
 
-    day.isAfter(selection.startDate) && day.isBefore(selection.endDate) -> {
-        val daysFromStart = ChronoUnit.DAYS.between(selection.startDate, day)
-        val daysToEnd = ChronoUnit.DAYS.between(day, selection.endDate)
+            selection.endDate == null && day == selection.startDate -> copy(
+                selection = null,
+                selectionMode = ForcedSelectMode.StartDate
+            )
 
-        if (daysFromStart < daysToEnd) {
-            copy(
+            selection.endDate != null && day.isBefore(selection.endDate) -> copy(
                 selection = selection.copy(startDate = day),
+                selectionMode = ForcedSelectMode.EndDate
             )
-        } else {
-            copy(
+
+            else -> copy(
+                selection = DateRangeSelection(startDate = day),
+                selectionMode = ForcedSelectMode.EndDate
+            )
+        }
+    }
+
+    selectionMode == ForcedSelectMode.EndDate -> {
+        when {
+            day.isBefore(selection.startDate) -> copy(
+                selection = selection.copy(startDate = day)
+            )
+
+            selection.endDate == null && day.isAfter(selection.startDate) -> copy(
+                selection = selection.copy(endDate = day)
+            )
+
+            selection.endDate == null && day == selection.startDate -> copy(
+                selection = null,
+                selectionMode = ForcedSelectMode.StartDate,
+            )
+
+            day == selection.startDate -> copy(
+                selection = DateRangeSelection(startDate = day),
+            )
+
+            selection.endDate != null && day.isBefore(selection.endDate) -> copy(
                 selection = selection.copy(endDate = day),
+            )
+
+            selection.endDate != null && day == selection.endDate -> copy(
+                selection = selection.copy(endDate = null),
+            )
+
+            else -> copy(
+                selection = selection.copy(endDate = day)
             )
         }
     }

@@ -19,11 +19,15 @@ package com.squaredem.composecalendar.composable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ChevronLeft
@@ -39,7 +43,10 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.squaredem.composecalendar.model.ColorScheme
 import com.squaredem.composecalendar.utils.LogCompositions
 import java.text.SimpleDateFormat
@@ -63,10 +70,10 @@ internal fun CalendarMonthYearSelector(
 ) {
     LogCompositions("CalendarMonthYearSelector")
 
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .heightIn(40.dp)
             .then(modifier),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -93,7 +100,6 @@ internal fun CalendarMonthYearSelector(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun YearPicker(
     pagerDate: LocalDate,
@@ -102,26 +108,32 @@ private fun YearPicker(
 ) {
     val pagerMonthFormat = SimpleDateFormat(dateFormat, Locale.getDefault())
 
-    FilterChip(
-        label = {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onChipClicked() },
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Text(
                 text = pagerMonthFormat.format(
                     Date.from(pagerDate.atTime(OffsetTime.now()).toInstant())
                 ),
                 color = ColorScheme.yearPickerTitleHighlight,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
             )
-        },
-        selected = false,
-        border = null,
-        trailingIcon = {
+
             Icon(
                 imageVector = Icons.Default.ArrowDropDown,
                 contentDescription = "ArrowDropDown",
                 tint = ColorScheme.yearPickerTitleHighlight
             )
-        },
-        onClick = onChipClicked,
-    )
+        }
+    }
 }
 
 @Composable
@@ -134,13 +146,17 @@ private fun TodayButton(
         enter = fadeIn(),
         exit = fadeOut(),
     ) {
-        TextButton(
-            onClick = { onGoToToday() },
-            colors = ButtonDefaults.textButtonColors(
-                contentColor = ColorScheme.todayButtonText,
+        Box(modifier = Modifier
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onGoToToday() }) {
+
+            Text(
+                text = "Today",
+                modifier = Modifier.padding(vertical = 4.dp),
+                color = ColorScheme.todayButtonText,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
             )
-        ) {
-            Text("Today")
         }
     }
 }
@@ -172,6 +188,7 @@ private fun MonthChevrons(
                 Icon(Icons.Default.ChevronLeft, "ChevronLeft", Modifier.size(16.dp))
             }
             IconButton(
+                modifier = Modifier.padding(0.dp),
                 onClick = onNextMonth,
                 enabled = isNextMonthEnabled,
                 colors = IconButtonDefaults.iconButtonColors(

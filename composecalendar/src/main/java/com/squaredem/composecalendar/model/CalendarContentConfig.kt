@@ -14,6 +14,9 @@
 
 package com.squaredem.composecalendar.model
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.staticCompositionLocalOf
 import java.time.LocalDate
 
 /**
@@ -23,6 +26,8 @@ import java.time.LocalDate
  * @param extraButtonHelper which helper button should be shown.
  * @param calendarDayOption should apply different options for specific days.
  * @param calendarYearPickerFormat date format to show on the date picker placeholder.
+ * @param currentPagerDate force scroll to [LocalDate].
+ * @param hasDividers has dividers between components.
  */
 data class CalendarContentConfig(
     val showSelectedDateTitle: Boolean,
@@ -30,6 +35,8 @@ data class CalendarContentConfig(
     val weekDaysMode: WeekDaysMode,
     val calendarDayOption: ((LocalDate) -> DayOption)?,
     val calendarYearPickerFormat: String,
+    val currentPagerDate: LocalDate?,
+    val hasDividers: Boolean,
 )
 
 sealed class DayOption {
@@ -63,4 +70,13 @@ enum class ExtraButtonHelperType {
      * Navigation buttons to go to next and previous months.
      */
     MonthChevrons
+}
+
+internal val Config: CalendarContentConfig
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalCalendarConfig.current
+
+internal val LocalCalendarConfig = staticCompositionLocalOf {
+    CalendarDefaults.defaultContentConfig()
 }
