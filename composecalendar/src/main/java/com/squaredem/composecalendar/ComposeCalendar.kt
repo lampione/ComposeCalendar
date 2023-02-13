@@ -15,7 +15,8 @@
  */
 
 package com.squaredem.composecalendar
-
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -45,6 +46,16 @@ fun ComposeCalendar(
     titleFormatter: (LocalDate?) -> String = DefaultTitleFormatters.singleDate(),
 ) {
     val selectedDate = remember { mutableStateOf(startDate) }
+    var mode by remember {
+        mutableStateOf(
+            CalendarMode.Single(
+                selectedDate = startDate,
+                minDate = minDate,
+                maxDate = maxDate,
+                titleFormatter = titleFormatter,
+            )
+        )
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -62,13 +73,9 @@ fun ComposeCalendar(
         },
         text = {
             SingleDatePicker(
-                mode = CalendarMode.Single(
-                    selectedDate = startDate,
-                    minDate = minDate,
-                    maxDate = maxDate,
-                    titleFormatter = titleFormatter,
-                ),
+                mode = mode,
                 onChanged = {
+                    mode = it
                     selectedDate.value = it.selectedDate ?: it.startDate
                 },
                 contentConfig = contentConfig,
