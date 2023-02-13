@@ -15,7 +15,6 @@
 package com.squaredem.composecalendar.model
 
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 sealed class CalendarMode {
     abstract val minDate: LocalDate
@@ -97,7 +96,10 @@ internal fun CalendarMode.Range.onDayClicked(day: LocalDate): CalendarMode.Range
     selectionMode == ForcedSelectMode.EndDate -> {
         when {
             day.isBefore(selection.startDate) -> copy(
-                selection = selection.copy(startDate = day)
+                selection = selection.copy(
+                    startDate = day,
+                    endDate = selection.endDate ?: selection.startDate,
+                )
             )
 
             selection.endDate == null && day.isAfter(selection.startDate) -> copy(

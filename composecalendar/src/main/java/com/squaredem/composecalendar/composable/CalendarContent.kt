@@ -19,7 +19,6 @@ package com.squaredem.composecalendar.composable
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -91,8 +90,7 @@ internal fun CalendarContent(
         LocalCalendarColorScheme provides calendarColors,
         LocalCalendarConfig provides contentConfig,
     ) {
-        var currentMode by remember { mutableStateOf(mode) }
-        val dateRange by remember(currentMode) {
+        val dateRange by remember(mode) {
             derivedStateOf { getDateRange(mode.minDate, mode.maxDate) }
         }
         val dateRangeByYear = dateRange.step(DateRangeStep.Year(1))
@@ -102,7 +100,7 @@ internal fun CalendarContent(
 
         // for display only, used in CalendarMonthYearSelector
         var currentPagerDate by remember { mutableStateOf(LocalDate.now()) }
-        val selectedYear by remember(currentMode) {
+        val selectedYear by remember(mode) {
             derivedStateOf { currentPagerDate.year }
         }
         val pagerState = rememberPagerState(initialPage ?: 0)
@@ -114,7 +112,6 @@ internal fun CalendarContent(
 
         val setCurrentMode: (CalendarMode) -> Unit = {
             onChanged(it)
-            currentMode = it
         }
 
         val isTodayAvailable by remember {
@@ -134,17 +131,14 @@ internal fun CalendarContent(
         }
 
         val jumpToPageDate = Config.currentPagerDate
-        val jumpToPagerDateScope = rememberCoroutineScope()
         LaunchedEffect(jumpToPageDate) {
             jumpToPageDate?.let {
-                jumpToPagerDateScope.launch {
                     val range = dateRange
                     range.indexOfFirst {
-                        it.withDayOfMonth(1) == it.withDayOfMonth(1)
+                        it.withDayOfMonth(1) == jumpToPageDate.withDayOfMonth(1)
                     }.assertValidPageOrNull(pagerState)?.let {
                         pagerState.scrollToPage(it)
                     }
-                }
             }
         }
 
@@ -154,7 +148,7 @@ internal fun CalendarContent(
                 .then(modifier),
         ) {
             if (contentConfig.showSelectedDateTitle) {
-                CalendarTopBar(currentMode)
+                CalendarTopBar(mode)
             }
             val scope = rememberCoroutineScope()
             CalendarMonthYearSelector(
@@ -241,7 +235,7 @@ internal fun CalendarContent(
                                     val currentMonth = getDateFromCurrentPage(
                                         currentPage = pagerState.currentPage,
                                         dateRange = dateRange,
-                                    )?.month ?: currentMode.startDate.month
+                                    )?.month ?: mode.startDate.month
                                     coroutineScope.launch {
                                         dateRange
                                             .indexOfFirst {
@@ -250,8 +244,8 @@ internal fun CalendarContent(
                                             .assertValidPageOrNull(pagerState)
                                             .closestValidRange(
                                                 date = LocalDate.of(year, currentMonth, 1),
-                                                maxDate = currentMode.maxDate,
-                                                minDate = currentMode.minDate,
+                                                maxDate = mode.maxDate,
+                                                minDate = mode.minDate,
                                                 maxIndex = dateRange.count() - 1,
                                             )
                                             ?.let {
@@ -314,7 +308,7 @@ internal fun CalendarContent(
                                         CalendarGrid(
                                             pagerDate = it.withDayOfMonth(1),
                                             dateRange = dateRange,
-                                            mode = currentMode,
+                                            mode = mode,
                                             onSelected = setCurrentMode,
                                             showCurrentMonthOnly = false,
                                             calendarDayOption = contentConfig.calendarDayOption,
