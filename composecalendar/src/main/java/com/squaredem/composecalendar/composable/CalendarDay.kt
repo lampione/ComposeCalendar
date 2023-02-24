@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -34,10 +35,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.squaredem.composecalendar.model.ColorScheme
+import com.squaredem.composecalendar.model.Config
 import com.squaredem.composecalendar.model.DateWrapper
 import com.squaredem.composecalendar.model.DayOption
 import com.squaredem.composecalendar.model.HighlightedType
 import com.squaredem.composecalendar.utils.LogCompositions
+import com.squaredem.composecalendar.utils.isFirstDayOfWeek
+import com.squaredem.composecalendar.utils.isLastDayOfWeek
 import java.time.LocalDate
 
 @Composable
@@ -127,7 +131,33 @@ internal fun CalendarDay(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(ColorScheme.inRangeDayBackground),
+                        .let {
+                            when {
+                                date.localDate.dayOfWeek.isFirstDayOfWeek(Config.weekStartDay) -> {
+                                    it.background(
+                                        color = ColorScheme.inRangeDayBackground,
+                                        shape = RoundedCornerShape(
+                                            topStart = Config.selectorBackgroundRadius,
+                                            bottomStart = Config.selectorBackgroundRadius,
+                                        )
+                                    )
+                                }
+
+                                date.localDate.dayOfWeek.isLastDayOfWeek(Config.weekStartDay) -> {
+                                    it.background(
+                                        color = ColorScheme.inRangeDayBackground,
+                                        shape = RoundedCornerShape(
+                                            topEnd = Config.selectorBackgroundRadius,
+                                            bottomEnd = Config.selectorBackgroundRadius,
+                                        )
+                                    )
+                                }
+
+                                else -> {
+                                    it.background(ColorScheme.inRangeDayBackground)
+                                }
+                            }
+                        },
                 )
             }
 
