@@ -114,7 +114,8 @@ private fun MainActivityContent() {
 
                                 else -> DayOption.Default
                             }
-                        }
+                        },
+                        weekStartDay = DayOfWeek.TUESDAY,
                     )
                 )
             }
@@ -148,6 +149,7 @@ private fun MainActivityContent() {
                                 },
                             highlighted = mode.selectionMode == ForcedSelectMode.StartDate,
                             label = "Start date",
+                            hasError = mode.selection == null,
                         )
 
                         val endDate = mode.selection?.endDate ?: mode.selection?.startDate
@@ -168,6 +170,7 @@ private fun MainActivityContent() {
                                 },
                             highlighted = mode.selectionMode == ForcedSelectMode.EndDate,
                             label = "End date",
+                            hasError = mode.selection == null,
                         )
                     }
 
