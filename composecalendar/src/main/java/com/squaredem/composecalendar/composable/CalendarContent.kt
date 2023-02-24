@@ -68,6 +68,7 @@ import com.squaredem.composecalendar.utils.LogCompositions
 import com.squaredem.composecalendar.utils.assertValidPageOrNull
 import com.squaredem.composecalendar.utils.closestValidRange
 import com.squaredem.composecalendar.utils.customLog
+import com.squaredem.composecalendar.utils.daysOfWeekFromDay
 import com.squaredem.composecalendar.utils.getText
 import com.squaredem.composecalendar.utils.logDebugWarning
 import com.squaredem.composecalendar.utils.nextPage
@@ -296,7 +297,7 @@ internal fun CalendarContent(
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                                 ) {
-                                    DayOfWeek.values().forEach {
+                                    daysOfWeekFromDay(Config.weekStartDay).forEach {
                                         Text(
                                             modifier = Modifier.weight(1f),
                                             text = contentConfig.weekDaysMode.getText(it),
