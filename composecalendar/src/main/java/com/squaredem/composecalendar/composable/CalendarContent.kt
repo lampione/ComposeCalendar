@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -290,6 +291,8 @@ internal fun CalendarContent(
                                 verticalArrangement = Arrangement.spacedBy(16.dp),
                                 modifier = Modifier
                                     .padding(vertical = 8.dp)
+                                    // Give it max height so it does not crash apps with scrolling.
+                                    .heightIn(max = Config.maxWidth * 2)
                                     .onGloballyPositioned {
                                         minHeight = with(density) { it.size.height.toDp() }
                                     },
