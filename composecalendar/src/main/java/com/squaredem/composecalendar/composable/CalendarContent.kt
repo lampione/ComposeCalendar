@@ -24,7 +24,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Divider
@@ -40,6 +42,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,7 +72,6 @@ import com.squaredem.composecalendar.utils.getText
 import com.squaredem.composecalendar.utils.logDebugWarning
 import com.squaredem.composecalendar.utils.nextPage
 import com.squaredem.composecalendar.utils.previousPage
-import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.*
 import kotlin.math.abs
@@ -145,6 +148,7 @@ internal fun CalendarContent(
         Column(
             modifier = Modifier
                 .wrapContentHeight()
+                .widthIn(max = contentConfig.maxWidth)
                 .then(modifier),
         ) {
             if (contentConfig.showSelectedDateTitle) {
@@ -209,7 +213,8 @@ internal fun CalendarContent(
                     contentConfig.extraButtonHelper == ExtraButtonHelperType.Today,
             )
 
-            val minHeight = 375.dp
+            var minHeight by remember { mutableStateOf(375.dp) }
+            val density = LocalDensity.current
             AnimatedContent(
                 targetState = isPickingYear,
             ) { isYearPicker ->
@@ -282,7 +287,11 @@ internal fun CalendarContent(
                             }
                             Column(
                                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = Modifier.height(minHeight),
+                                modifier = Modifier
+                                    .padding(vertical = 8.dp)
+                                    .onGloballyPositioned {
+                                        minHeight = with(density) { it.size.height.toDp() }
+                                    },
                             ) {
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -315,7 +324,6 @@ internal fun CalendarContent(
                                         )
                                     }
                                 }
-
                             }
                             if (Config.hasDividers) {
                                 Divider(
