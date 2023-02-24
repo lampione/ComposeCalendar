@@ -40,6 +40,5 @@ fun calculateWeekdayDistance(firstWeekday: DayOfWeek, secondWeekday: DayOfWeek):
     val weekdays = DayOfWeek.values()
     val firstIndex = weekdays.indexOf(firstWeekday)
     val secondIndex = weekdays.indexOf(secondWeekday)
-    val distance = abs(firstIndex - secondIndex)
-    return if (distance > 3) 7 - distance else distance
+    return abs(firstIndex - secondIndex)
 }
