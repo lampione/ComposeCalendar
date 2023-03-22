@@ -137,6 +137,7 @@ internal fun CalendarMode.highlightedTypeForDay(day: LocalDate): HighlightedType
         when {
             selection == null -> null
             selection.endDate == null -> null
+            selection.startDate == selection.endDate -> null
             day == selection.startDate -> HighlightedType.End
             day == selection.endDate -> HighlightedType.Start
             day > selection.startDate && day < selection.endDate -> HighlightedType.Full
