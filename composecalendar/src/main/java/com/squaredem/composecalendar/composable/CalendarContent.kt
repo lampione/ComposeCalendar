@@ -213,6 +213,7 @@ internal fun CalendarContent(
                     contentConfig.extraButtonHelper == ExtraButtonHelperType.MonthChevrons,
                 isTodayButtonVisible = !isPickingYear && isTodayAvailable &&
                     contentConfig.extraButtonHelper == ExtraButtonHelperType.Today,
+                todayTitle = contentConfig.todayTitle,
             )
 
             var minHeight by remember { mutableStateOf(375.dp) }

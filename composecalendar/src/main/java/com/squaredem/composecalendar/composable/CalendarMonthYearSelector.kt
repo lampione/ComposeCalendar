@@ -32,14 +32,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,6 +54,7 @@ import java.util.*
 internal fun CalendarMonthYearSelector(
     pagerDate: LocalDate,
     dateFormat: String,
+    todayTitle: String,
     onChipClicked: () -> Unit,
     onNextMonth: () -> Unit,
     onPreviousMonth: () -> Unit,
@@ -96,6 +93,7 @@ internal fun CalendarMonthYearSelector(
         TodayButton(
             isVisible = isTodayButtonVisible,
             onGoToToday = onGoToToday,
+            todayTitle = todayTitle,
         )
     }
 }
@@ -138,6 +136,7 @@ private fun YearPicker(
 
 @Composable
 private fun TodayButton(
+    todayTitle: String,
     isVisible: Boolean,
     onGoToToday: () -> Unit,
 ) {
@@ -151,7 +150,7 @@ private fun TodayButton(
             .clickable { onGoToToday() }) {
 
             Text(
-                text = "Today",
+                text = todayTitle,
                 modifier = Modifier.padding(vertical = 4.dp),
                 color = ColorScheme.todayButtonText,
                 fontWeight = FontWeight.Medium,

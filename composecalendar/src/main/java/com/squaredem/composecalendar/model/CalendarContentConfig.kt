@@ -33,6 +33,8 @@ import java.time.LocalDate
  * @param selectorBackgroundRadius shape radius for the mid range dates on first and last day of
  * each week.
  * @param maxWidth calendar max width (448dp is 64dp*7 each day max).
+ * @param weekStartDay starting day of the week.
+ * @param todayTitle text to be displayed on the today button.
  */
 data class CalendarContentConfig(
     val showSelectedDateTitle: Boolean,
@@ -45,6 +47,7 @@ data class CalendarContentConfig(
     val selectorBackgroundRadius: Dp,
     val maxWidth: Dp,
     val weekStartDay: DayOfWeek,
+    val todayTitle: String,
 )
 
 sealed class DayOption {

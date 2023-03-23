@@ -34,6 +34,7 @@ object CalendarDefaults {
         selectorBackgroundRadius: Dp = 12.dp,
         maxWidth: Dp = 448.dp,
         weekStartDay: DayOfWeek = DayOfWeek.MONDAY,
+        todayTitle: String = "Today",
     ) = CalendarContentConfig(
         showSelectedDateTitle = showSelectedDateTitle,
         extraButtonHelper = extraButtonHelper,
@@ -45,6 +46,7 @@ object CalendarDefaults {
         selectorBackgroundRadius = selectorBackgroundRadius,
         maxWidth = maxWidth,
         weekStartDay = weekStartDay,
+        todayTitle = todayTitle,
     )
 
     @Composable
