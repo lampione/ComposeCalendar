@@ -27,7 +27,7 @@ class Ref(var value: Int)
 internal const val SDK_TAG = "ComposeCalendar"
 
 @Composable
-internal inline fun LogCompositions(msg: String) {
+internal fun LogCompositions(msg: String) {
     if (BuildConfig.DEBUG) {
         val ref = remember { Ref(0) }
         SideEffect { ref.value++ }

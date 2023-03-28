@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// Using this since we are using the "old" pager since support with new pager wasn't working as
+// expected.
+@file:Suppress("DEPRECATION")
+
 package com.squaredem.composecalendar.composable
 
 import androidx.compose.animation.AnimatedContent
