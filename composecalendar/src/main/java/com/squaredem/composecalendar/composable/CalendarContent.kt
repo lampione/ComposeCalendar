@@ -20,19 +20,18 @@
 
 package com.squaredem.composecalendar.composable
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -221,148 +220,134 @@ internal fun CalendarContent(
                 isTodayButtonVisible = !isPickingYear && isTodayAvailable &&
                     contentConfig.extraButtonHelper == ExtraButtonHelperType.Today,
                 todayTitle = contentConfig.todayTitle,
+                modifier = Modifier.heightIn(min = 48.dp)
             )
 
             var minHeight by remember { mutableStateOf(375.dp) }
             val density = LocalDensity.current
-            AnimatedContent(
-                targetState = isPickingYear,
-                transitionSpec = {
-                    fadeIn(animationSpec = tween(220, delayMillis = 55)) with
-                        fadeOut(animationSpec = tween(110))
-                }
-            ) { isYearPicker ->
-                when (isYearPicker) {
-                    true -> {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(minHeight)
-                        ) {
-                            if (Config.hasDividers) {
-                                Divider(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    thickness = 1.dp,
-                                    color = ColorScheme.dividerColor,
-                                )
 
-                                Spacer(modifier = Modifier.size(8.dp))
-                            }
+            val inAnimation = fadeIn(animationSpec = tween(220, delayMillis = 55))
+            val outAnimation = fadeOut(animationSpec = tween(110))
 
-                            CalendarYearGrid(
-                                gridState = gridState,
-                                dateRangeByYear = dateRangeByYear,
-                                selectedYear = currentPagerDate.year,
-                                currentYear = LocalDate.now().year,
-                                onYearSelected = { year ->
-                                    val currentMonth = getDateFromCurrentPage(
-                                        currentPage = pagerState.currentPage,
-                                        dateRange = dateRange,
-                                    )?.month ?: mode.startDate.month
-                                    coroutineScope.launch {
-                                        dateRange
-                                            .indexOfFirst {
-                                                it.year == year && it.month == currentMonth
-                                            }
-                                            .assertValidPageOrNull(pagerState)
-                                            .closestValidRange(
-                                                date = LocalDate.of(year, currentMonth, 1),
-                                                maxDate = mode.maxDate,
-                                                minDate = mode.minDate,
-                                                maxIndex = dateRange.count() - 1,
-                                            )
-                                            ?.let {
-                                                currentPagerDate = dateRange.toList()[it]
-                                                pagerState.scrollToPage(it)
-                                            }
-                                    }
-                                    isPickingYear = false
-                                },
-                                modifier = Modifier.weight(1f)
-                            )
+            if (Config.hasDividers) {
+                Divider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = ColorScheme.dividerColor,
+                )
 
-                            if (Config.hasDividers) {
-                                Spacer(modifier = Modifier.size(8.dp))
+                Spacer(modifier = Modifier.size(12.dp))
+            }
 
-                                Divider(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    thickness = 1.dp,
-                                    color = ColorScheme.dividerColor,
-                                )
-                            }
-                        }
+            Box {
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = isPickingYear,
+                    enter = inAnimation,
+                    exit = outAnimation,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(minHeight)
+                    ) {
+                        CalendarYearGrid(
+                            gridState = gridState,
+                            dateRangeByYear = dateRangeByYear,
+                            selectedYear = currentPagerDate.year,
+                            currentYear = LocalDate.now().year,
+                            onYearSelected = { year ->
+                                val currentMonth = getDateFromCurrentPage(
+                                    currentPage = pagerState.currentPage,
+                                    dateRange = dateRange,
+                                )?.month ?: mode.startDate.month
+                                coroutineScope.launch {
+                                    dateRange
+                                        .indexOfFirst {
+                                            it.year == year && it.month == currentMonth
+                                        }
+                                        .assertValidPageOrNull(pagerState)
+                                        .closestValidRange(
+                                            date = LocalDate.of(year, currentMonth, 1),
+                                            maxDate = mode.maxDate,
+                                            minDate = mode.minDate,
+                                            maxIndex = dateRange.count() - 1,
+                                        )
+                                        ?.let {
+                                            currentPagerDate = dateRange.toList()[it]
+                                            pagerState.scrollToPage(it)
+                                        }
+                                }
+                                isPickingYear = false
+                            },
+                            modifier = Modifier.fillMaxHeight(),
+                        )
                     }
-
-                    false -> {
+                }
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = !isPickingYear,
+                    enter = inAnimation,
+                    exit = outAnimation,
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(minHeight)
+                    ) {
                         Column(
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .heightIn(minHeight)
+                                // Give it max height so it does not crash apps with scrolling.
+                                .heightIn(max = Config.maxWidth * 1.5f)
                                 .onGloballyPositioned {
                                     minHeight = with(density) {
                                         it.size.height.toDp()
                                     }
-                                },
+                                }
                         ) {
-                            if (Config.hasDividers) {
-                                Divider(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    thickness = 1.dp,
-                                    color = ColorScheme.dividerColor,
-                                )
-
-                                Spacer(modifier = Modifier.size(12.dp))
-                            }
-                            Column(
-                                verticalArrangement = Arrangement.spacedBy(16.dp),
-                                modifier = Modifier
-                                    .padding(vertical = 8.dp)
-                                    // Give it max height so it does not crash apps with scrolling.
-                                    .heightIn(max = Config.maxWidth * 2)
-                                    .wrapContentHeight()
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
                             ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    daysOfWeekFromDay(Config.weekStartDay).forEach {
-                                        Text(
-                                            modifier = Modifier.weight(1f),
-                                            text = contentConfig.weekDaysMode.getText(it),
-                                            textAlign = TextAlign.Center,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = ColorScheme.dayOfWeek,
-                                        )
-                                    }
-                                }
-
-                                HorizontalPager(
-                                    count = totalPageCount,
-                                    state = pagerState,
-                                ) { page ->
-                                    val currentDate = getDateFromCurrentPage(page, dateRange)
-                                    currentDate?.let {
-                                        // grid
-                                        CalendarGrid(
-                                            pagerDate = it.withDayOfMonth(1),
-                                            dateRange = dateRange,
-                                            mode = mode,
-                                            onSelected = setCurrentMode,
-                                            showCurrentMonthOnly = false,
-                                            calendarDayOption = contentConfig.calendarDayOption,
-                                        )
-                                    }
+                                daysOfWeekFromDay(Config.weekStartDay).forEach {
+                                    Text(
+                                        modifier = Modifier.weight(1f),
+                                        text = contentConfig.weekDaysMode.getText(it),
+                                        textAlign = TextAlign.Center,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = ColorScheme.dayOfWeek,
+                                    )
                                 }
                             }
-                            if (Config.hasDividers) {
-                                Divider(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    thickness = 1.dp,
-                                    color = ColorScheme.dividerColor,
-                                )
+
+                            HorizontalPager(
+                                count = totalPageCount,
+                                state = pagerState,
+                            ) { page ->
+                                val currentDate = getDateFromCurrentPage(page, dateRange)
+                                currentDate?.let {
+                                    // grid
+                                    CalendarGrid(
+                                        pagerDate = it.withDayOfMonth(1),
+                                        dateRange = dateRange,
+                                        mode = mode,
+                                        onSelected = setCurrentMode,
+                                        showCurrentMonthOnly = false,
+                                        calendarDayOption = contentConfig.calendarDayOption,
+                                    )
+                                }
                             }
                         }
                     }
                 }
+            }
+
+            if (Config.hasDividers) {
+                Spacer(modifier = Modifier.size(12.dp))
+
+                Divider(
+                    modifier = Modifier.fillMaxWidth(),
+                    thickness = 1.dp,
+                    color = ColorScheme.dividerColor,
+                )
             }
         }
     }
