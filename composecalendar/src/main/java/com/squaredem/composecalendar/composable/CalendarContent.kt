@@ -21,7 +21,10 @@
 package com.squaredem.composecalendar.composable
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -85,7 +88,7 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalPagerApi::class)
 @Composable
 internal fun CalendarContent(
     mode: CalendarMode,
@@ -142,12 +145,12 @@ internal fun CalendarContent(
         val jumpToPageDate = Config.currentPagerDate
         LaunchedEffect(jumpToPageDate) {
             jumpToPageDate?.let {
-                    val range = dateRange
-                    range.indexOfFirst {
-                        it.withDayOfMonth(1) == jumpToPageDate.withDayOfMonth(1)
-                    }.assertValidPageOrNull(pagerState)?.let {
-                        pagerState.scrollToPage(it)
-                    }
+                val range = dateRange
+                range.indexOfFirst {
+                    it.withDayOfMonth(1) == jumpToPageDate.withDayOfMonth(1)
+                }.assertValidPageOrNull(pagerState)?.let {
+                    pagerState.scrollToPage(it)
+                }
             }
         }
 
@@ -224,10 +227,18 @@ internal fun CalendarContent(
             val density = LocalDensity.current
             AnimatedContent(
                 targetState = isPickingYear,
+                transitionSpec = {
+                    fadeIn(animationSpec = tween(220, delayMillis = 55)) with
+                        fadeOut(animationSpec = tween(110))
+                }
             ) { isYearPicker ->
                 when (isYearPicker) {
                     true -> {
-                        Column(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(minHeight)
+                        ) {
                             if (Config.hasDividers) {
                                 Divider(
                                     modifier = Modifier.fillMaxWidth(),
@@ -267,7 +278,7 @@ internal fun CalendarContent(
                                     }
                                     isPickingYear = false
                                 },
-                                modifier = Modifier.height(minHeight)
+                                modifier = Modifier.weight(1f)
                             )
 
                             if (Config.hasDividers) {
@@ -281,8 +292,18 @@ internal fun CalendarContent(
                             }
                         }
                     }
+
                     false -> {
-                        Column(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(minHeight)
+                                .onGloballyPositioned {
+                                    minHeight = with(density) {
+                                        it.size.height.toDp()
+                                    }
+                                },
+                        ) {
                             if (Config.hasDividers) {
                                 Divider(
                                     modifier = Modifier.fillMaxWidth(),
@@ -298,9 +319,7 @@ internal fun CalendarContent(
                                     .padding(vertical = 8.dp)
                                     // Give it max height so it does not crash apps with scrolling.
                                     .heightIn(max = Config.maxWidth * 2)
-                                    .onGloballyPositioned {
-                                        minHeight = with(density) { it.size.height.toDp() }
-                                    },
+                                    .wrapContentHeight()
                             ) {
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(4.dp)
