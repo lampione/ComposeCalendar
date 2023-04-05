@@ -33,10 +33,12 @@ object SelectedDateViewDefaults {
         highlightColor: Color = MaterialTheme.colorScheme.primary,
         neutralColor: Color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.15f),
         iconTint: Color = MaterialTheme.colorScheme.onBackground,
+        errorColor: Color = MaterialTheme.colorScheme.error.copy(alpha = 0.70f),
     ) = SelectedDateViewColors(
         highlightColor = highlightColor,
         neutralColor = neutralColor,
         iconTint = iconTint,
+        errorColor = errorColor,
     )
 
     @Composable
@@ -74,6 +76,7 @@ data class SelectedDateViewColors(
     val highlightColor: Color,
     val neutralColor: Color,
     val iconTint: Color,
+    val errorColor: Color,
 )
 
 data class SelectedDateViewTextStyles(

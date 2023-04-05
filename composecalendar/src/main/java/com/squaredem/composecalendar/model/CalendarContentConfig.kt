@@ -17,6 +17,8 @@ package com.squaredem.composecalendar.model
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.unit.Dp
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 /**
@@ -28,6 +30,11 @@ import java.time.LocalDate
  * @param calendarYearPickerFormat date format to show on the date picker placeholder.
  * @param currentPagerDate force scroll to [LocalDate].
  * @param hasDividers has dividers between components.
+ * @param selectorBackgroundRadius shape radius for the mid range dates on first and last day of
+ * each week.
+ * @param maxWidth calendar max width (448dp is 64dp*7 each day max).
+ * @param weekStartDay starting day of the week.
+ * @param todayTitle text to be displayed on the today button.
  */
 data class CalendarContentConfig(
     val showSelectedDateTitle: Boolean,
@@ -37,6 +44,10 @@ data class CalendarContentConfig(
     val calendarYearPickerFormat: String,
     val currentPagerDate: LocalDate?,
     val hasDividers: Boolean,
+    val selectorBackgroundRadius: Dp,
+    val maxWidth: Dp,
+    val weekStartDay: DayOfWeek,
+    val todayTitle: String,
 )
 
 sealed class DayOption {

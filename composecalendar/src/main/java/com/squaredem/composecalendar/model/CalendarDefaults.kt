@@ -17,6 +17,9 @@ package com.squaredem.composecalendar.model
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import java.time.DayOfWeek
 import java.time.LocalDate
 
 object CalendarDefaults {
@@ -28,6 +31,10 @@ object CalendarDefaults {
         calendarYearPickerFormat: String = "MMMM yyyy",
         currentPagerDate: LocalDate? = null,
         hasDividers: Boolean = false,
+        selectorBackgroundRadius: Dp = 12.dp,
+        maxWidth: Dp = 448.dp,
+        weekStartDay: DayOfWeek = DayOfWeek.MONDAY,
+        todayTitle: String = "Today",
     ) = CalendarContentConfig(
         showSelectedDateTitle = showSelectedDateTitle,
         extraButtonHelper = extraButtonHelper,
@@ -36,6 +43,10 @@ object CalendarDefaults {
         calendarYearPickerFormat = calendarYearPickerFormat,
         currentPagerDate = currentPagerDate,
         hasDividers = hasDividers,
+        selectorBackgroundRadius = selectorBackgroundRadius,
+        maxWidth = maxWidth,
+        weekStartDay = weekStartDay,
+        todayTitle = todayTitle,
     )
 
     @Composable

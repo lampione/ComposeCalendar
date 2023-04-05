@@ -26,18 +26,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.squaredem.composecalendar.model.ColorScheme
+import com.squaredem.composecalendar.model.Config
 import com.squaredem.composecalendar.model.DateWrapper
 import com.squaredem.composecalendar.model.DayOption
 import com.squaredem.composecalendar.model.HighlightedType
 import com.squaredem.composecalendar.utils.LogCompositions
+import com.squaredem.composecalendar.utils.isFirstDayOfWeek
+import com.squaredem.composecalendar.utils.isLastDayOfWeek
 import java.time.LocalDate
 
 @Composable
@@ -48,17 +53,10 @@ internal fun CalendarDay(
 ) {
     LogCompositions("CalendarDay")
 
-    var currentModifier = Modifier.aspectRatio(1F)
-
+    val currentModifier = Modifier.aspectRatio(1F)
     if (!date.isCurrentMonth && date.showCurrentMonthOnly) {
         Box(modifier = currentModifier)
         return
-    }
-
-    if (date.isInDateRange && dayOption.isClickable) {
-        currentModifier = currentModifier.clickable {
-            onSelected(date.localDate)
-        }
     }
 
     val textColor = when {
@@ -89,22 +87,34 @@ internal fun CalendarDay(
     }
 
     val text = "${date.localDate.dayOfMonth}"
-
     Box(
         modifier = currentModifier,
         contentAlignment = Alignment.Center
     ) {
+        val isFirstDayOfWeek = date.localDate.dayOfWeek.isFirstDayOfWeek(Config.weekStartDay)
+        val isLastDayOfWeek = date.localDate.dayOfWeek.isLastDayOfWeek(Config.weekStartDay)
         when (date.highlightedType) {
             HighlightedType.Start -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.CenterStart
                 ) {
+                    val shape = if (isFirstDayOfWeek) {
+                        RoundedCornerShape(
+                            topStart = Config.selectorBackgroundRadius,
+                            bottomStart = Config.selectorBackgroundRadius,
+                        )
+                    } else {
+                        RoundedCornerShape(0.dp)
+                    }
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
                             .fillMaxHeight()
-                            .background(ColorScheme.inRangeDayBackground)
+                            .background(
+                                shape = shape,
+                                color = ColorScheme.inRangeDayBackground
+                            )
                     )
                 }
             }
@@ -114,11 +124,23 @@ internal fun CalendarDay(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.CenterEnd
                 ) {
+                    val shape = if (isLastDayOfWeek) {
+                        RoundedCornerShape(
+                            topEnd = Config.selectorBackgroundRadius,
+                            bottomEnd = Config.selectorBackgroundRadius,
+                        )
+                    } else {
+                        RoundedCornerShape(0.dp)
+                    }
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(0.5f)
                             .fillMaxHeight()
-                            .background(ColorScheme.inRangeDayBackground)
+                            .background(
+                                shape = shape,
+                                color = ColorScheme.inRangeDayBackground,
+                            )
                     )
                 }
             }
@@ -127,7 +149,33 @@ internal fun CalendarDay(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(ColorScheme.inRangeDayBackground),
+                        .let {
+                            when {
+                                isFirstDayOfWeek -> {
+                                    it.background(
+                                        color = ColorScheme.inRangeDayBackground,
+                                        shape = RoundedCornerShape(
+                                            topStart = Config.selectorBackgroundRadius,
+                                            bottomStart = Config.selectorBackgroundRadius,
+                                        )
+                                    )
+                                }
+
+                                isLastDayOfWeek -> {
+                                    it.background(
+                                        color = ColorScheme.inRangeDayBackground,
+                                        shape = RoundedCornerShape(
+                                            topEnd = Config.selectorBackgroundRadius,
+                                            bottomEnd = Config.selectorBackgroundRadius,
+                                        )
+                                    )
+                                }
+
+                                else -> {
+                                    it.background(ColorScheme.inRangeDayBackground)
+                                }
+                            }
+                        },
                 )
             }
 
@@ -155,6 +203,16 @@ internal fun CalendarDay(
                         color = ColorScheme.selectedDayBackground,
                         shape = CircleShape
                     ),
+            )
+        }
+
+        if (date.isInDateRange && dayOption.isClickable) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .clip(CircleShape)
+                .clickable {
+                    onSelected(date.localDate)
+                }
             )
         }
 

@@ -48,6 +48,7 @@ fun SelectedDateView(
     highlighted: Boolean = false,
     label: String? = null,
     hint: String? = null,
+    hasError: Boolean = false,
     config: SelectedDateViewConfig = SelectedDateViewDefaults.defaultConfig(),
     colors: SelectedDateViewColors = SelectedDateViewDefaults.defaultColors(),
     textStyles: SelectedDateViewTextStyles = SelectedDateViewDefaults.defaultTextStyles(),
@@ -84,6 +85,11 @@ fun SelectedDateView(
                 Text(
                     text = labelText,
                     style = textStyles.label,
+                    color = if (hasError) {
+                        colors.errorColor
+                    } else {
+                        textStyles.label.color
+                    }
                 )
             }
         }
@@ -121,6 +127,11 @@ fun SelectedDateView(
                     Text(
                         text = hintText,
                         style = textStyles.hint,
+                        color = if (hasError) {
+                            colors.errorColor
+                        } else {
+                            textStyles.hint.color
+                        }
                     )
                 }
             }
@@ -135,7 +146,11 @@ fun SelectedDateView(
                 Divider(
                     modifier = Modifier.fillMaxWidth(),
                     thickness = 2.dp,
-                    color = colors.highlightColor,
+                    color = if (hasError) {
+                        colors.errorColor
+                    } else {
+                        colors.highlightColor
+                    },
                 )
             }
 
@@ -147,7 +162,11 @@ fun SelectedDateView(
                 Divider(
                     modifier = Modifier.fillMaxWidth(),
                     thickness = 1.dp,
-                    color = colors.neutralColor,
+                    color = if (hasError) {
+                        colors.errorColor
+                    } else {
+                        colors.neutralColor
+                    },
                 )
             }
         }

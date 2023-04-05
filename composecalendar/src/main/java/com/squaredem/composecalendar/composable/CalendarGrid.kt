@@ -26,11 +26,13 @@ import com.squaredem.composecalendar.daterange.DateRange
 import com.squaredem.composecalendar.daterange.DateRangeStep
 import com.squaredem.composecalendar.daterange.rangeTo
 import com.squaredem.composecalendar.model.CalendarMode
+import com.squaredem.composecalendar.model.Config
 import com.squaredem.composecalendar.model.DateWrapper
 import com.squaredem.composecalendar.model.DayOption
 import com.squaredem.composecalendar.model.hasSelectionIndicator
 import com.squaredem.composecalendar.model.highlightedTypeForDay
 import com.squaredem.composecalendar.utils.LogCompositions
+import com.squaredem.composecalendar.utils.calculateWeekdayDistance
 import java.time.LocalDate
 
 @Composable
@@ -46,12 +48,14 @@ internal fun CalendarGrid(
 
     val gridSpacing = 4.dp
     val today = LocalDate.now()
-
     val firstWeekDayOfMonth = pagerDate.dayOfWeek
     val pagerMonth = pagerDate.month
-
-    val gridStartDay = pagerDate
-        .minusDays(firstWeekDayOfMonth.value.toLong() - 1)
+    val gridStartDay = pagerDate.minusDays(
+        calculateWeekdayDistance(
+            firstWeekday = Config.weekStartDay,
+            secondWeekday = firstWeekDayOfMonth,
+        ).toLong()
+    )
     val gridEndDay = gridStartDay.plusDays(41)
 
     val dates = (gridStartDay.rangeTo(gridEndDay) step DateRangeStep.Day()).map {
