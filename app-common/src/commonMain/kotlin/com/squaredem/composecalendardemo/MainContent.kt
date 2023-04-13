@@ -16,6 +16,7 @@
 
 package com.squaredem.composecalendardemo
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.squaredem.composecalendar.ModalDateDialog
 import kotlinx.datetime.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MainContent() {
     Box(

@@ -54,12 +54,9 @@ kotlin {
             dependencies {
                 // compose
                 api(compose.runtime)
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.foundation)
                 implementation(compose.material3)
                 implementation(compose.materialIconsExtended)
-
-                // pager
-                implementation("com.seanproctor:accompanist-pager:_")
 
                 // DateTime
                 api(KotlinX.datetime)
@@ -67,9 +64,7 @@ kotlin {
         }
     }
 
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "11"
-    }
+    jvmToolchain(11)
 }
 
 val localProperties = Properties().apply {
@@ -80,6 +75,7 @@ group = localProperties.getProperty("group", "com.squaredem")
 version = project.findProperty("compose-calendar.version")!!
 
 configure<com.vanniktech.maven.publish.MavenPublishBaseExtension> {
+    @Suppress("UnstableApiUsage")
     configure(
         com.vanniktech.maven.publish.KotlinMultiplatform(javadocJar = com.vanniktech.maven.publish.JavadocJar.Empty())
     )

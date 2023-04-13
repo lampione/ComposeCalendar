@@ -16,6 +16,7 @@
 
 package com.squaredem.composecalendar
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -37,6 +38,7 @@ import com.squaredem.composecalendar.utils.headlineFormat
 import com.squaredem.composecalendar.utils.parseInput
 import kotlinx.datetime.LocalDate
 
+@ExperimentalFoundationApi
 @ExperimentalMaterial3Api
 @Composable
 fun ModalDateDialog(

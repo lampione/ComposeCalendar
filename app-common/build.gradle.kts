@@ -5,6 +5,7 @@ plugins {
 }
 
 android {
+    namespace = "com.squaredem.composecalendardemo"
     compileSdk = 33
 
     defaultConfig {
@@ -28,14 +29,10 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":compose-calendar"))
-                implementation(compose.ui)
-                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.material3)
             }
         }
     }
 
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-        kotlinOptions.jvmTarget = "11"
-    }
+    jvmToolchain(11)
 }

@@ -26,3 +26,7 @@ dependencies {
     implementation(compose.preview)
     implementation(AndroidX.activity.compose)
 }
+
+kotlin {
+    jvmToolchain(11)
+}
