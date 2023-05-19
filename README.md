@@ -19,7 +19,7 @@ then add the latest ComposeCalendar version to your `app/build.gradle` file depe
 
 ```groovy
 dependencies {
-    implementation 'com.squaredem:composecalendar:1.0.4'
+    implementation 'com.squaredem:composecalendar:1.1.0'
 }
 ```
 
@@ -61,6 +61,19 @@ ComposeCalendar(
 ```
 
 > Note: currently min and max dates are being coerced respectively to year **1900** and **2100**.
+
+### Top bar customization
+
+You can choose whether to show or hide the top bar with the selected date.
+You can also pass a custom `DateFormat` for the string.
+
+```kotlin
+ComposeCalendar(
+    ...
+    showSelectedDate = true,
+    selectedDateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT)
+)
+```
 
 ## What's next
 

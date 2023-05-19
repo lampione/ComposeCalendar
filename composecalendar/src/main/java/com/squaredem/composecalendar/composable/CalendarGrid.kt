@@ -35,7 +35,6 @@ internal fun CalendarGrid(
     dateRange: DateRange,
     selectedDate: LocalDate,
     onSelected: (LocalDate) -> Unit,
-    showCurrentMonthOnly: Boolean
 ) {
     LogCompositions("CalendarGrid")
 
@@ -61,7 +60,6 @@ internal fun CalendarGrid(
             isCurrentDay,
             isCurrentMonth,
             isInDateRange,
-            showCurrentMonthOnly
         )
     }
 

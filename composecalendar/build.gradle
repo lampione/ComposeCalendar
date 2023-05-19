@@ -20,11 +20,11 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         minSdk 26
-        targetSdk 32
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -49,6 +49,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion compose_compiler_version
     }
+    namespace 'com.squaredem.composecalendar'
 }
 
 dependencies {
@@ -64,18 +65,18 @@ dependencies {
     // compose-material
     implementation "androidx.compose.material:material-icons-extended:$compose_version"
 
-    // pager
-    implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
-
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
 }
 
 ext {
     PUBLISH_GROUP_ID = 'com.squaredem'
     PUBLISH_ARTIFACT_ID = 'composecalendar'
-    PUBLISH_VERSION = '1.0.4'
+    PUBLISH_VERSION = '1.1.0'
 }
 
 apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"

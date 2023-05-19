@@ -47,11 +47,6 @@ internal fun CalendarDay(
         .aspectRatio(1F)
         .clip(CircleShape)
 
-    if (!date.isCurrentMonth && date.showCurrentMonthOnly) {
-        Box(modifier = currentModifier)
-        return
-    }
-
     currentModifier = when {
         date.isSelectedDay -> {
             currentModifier
@@ -60,6 +55,7 @@ internal fun CalendarDay(
                     shape = CircleShape
                 )
         }
+
         date.isCurrentDay -> {
             currentModifier
                 .border(
@@ -71,25 +67,25 @@ internal fun CalendarDay(
         else -> currentModifier
     }
 
-    if (date.isInDateRange || (date.isCurrentMonth && date.showCurrentMonthOnly)) {
+    if (date.isInDateRange && date.isCurrentMonth) {
         currentModifier = currentModifier.clickable {
             onSelected(date.localDate)
         }
     }
 
     val textColor = when {
-        !date.isInDateRange -> {
+        !date.isInDateRange || !date.isCurrentMonth -> {
             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38F)
         }
+
         date.isSelectedDay -> {
             MaterialTheme.colorScheme.onPrimary
         }
+
         date.isCurrentDay -> {
             MaterialTheme.colorScheme.primary
         }
-        !date.isCurrentMonth -> {
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.6F)
-        }
+
         else -> Color.Unspecified
     }
 
