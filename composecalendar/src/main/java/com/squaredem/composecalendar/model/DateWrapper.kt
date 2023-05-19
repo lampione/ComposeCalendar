@@ -24,5 +24,4 @@ internal data class DateWrapper(
     val isCurrentDay: Boolean,
     val isCurrentMonth: Boolean,
     val isInDateRange: Boolean,
-    val showCurrentMonthOnly: Boolean
 )

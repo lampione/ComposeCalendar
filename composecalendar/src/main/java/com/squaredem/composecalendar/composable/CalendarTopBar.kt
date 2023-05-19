@@ -31,7 +31,10 @@ import java.time.OffsetTime
 import java.util.*
 
 @Composable
-internal fun CalendarTopBar(selectedDate: LocalDate) {
+internal fun CalendarTopBar(
+    selectedDate: LocalDate,
+    dateFormat: DateFormat
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,9 +42,8 @@ internal fun CalendarTopBar(selectedDate: LocalDate) {
     ) {
         LogCompositions("CalendarTopBar")
 
-        val dateFormatter = DateFormat.getDateInstance(DateFormat.DEFAULT)
         Text(
-            text = dateFormatter.format(
+            text = dateFormat.format(
                 Date.from(selectedDate.atTime(OffsetTime.now()).toInstant())
             ),
             style = MaterialTheme.typography.headlineLarge,

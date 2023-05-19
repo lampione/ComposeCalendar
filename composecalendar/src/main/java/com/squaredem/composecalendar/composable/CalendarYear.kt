@@ -16,11 +16,13 @@
 
 package com.squaredem.composecalendar.composable
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import com.squaredem.composecalendar.utils.LogCompositions
 
 @Composable
@@ -32,20 +34,28 @@ internal fun CalendarYear(
 ) {
     LogCompositions("CalendarYear")
 
+    val modifier = Modifier.fillMaxWidth()
+
     if (isSelectedYear) {
-        Button(onClick = {
-            setSelectedYear(year)
-        }) {
+        Button(
+            modifier = modifier,
+            onClick = {
+                setSelectedYear(year)
+            }) {
             Text("$year", maxLines = 1)
         }
     } else if (isCurrentYear) {
-        OutlinedButton(onClick = {
-            setSelectedYear(year)
-        }) {
+        OutlinedButton(
+            modifier = modifier,
+            onClick = {
+                setSelectedYear(year)
+            }) {
             Text("$year", maxLines = 1)
         }
     } else {
-        TextButton(onClick = { setSelectedYear(year) }) {
+        TextButton(
+            modifier = modifier,
+            onClick = { setSelectedYear(year) }) {
             Text("$year", maxLines = 1)
         }
     }

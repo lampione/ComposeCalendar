@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.squaredem.composecalendar.utils.LogCompositions
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.OffsetTime
@@ -44,10 +45,9 @@ internal fun CalendarMonthYearSelector(
     onChipClicked: () -> Unit,
     onNextMonth: () -> Unit,
     onPreviousMonth: () -> Unit,
+    pagerMonthFormat: DateFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
 ) {
     LogCompositions("CalendarMonthYearSelector")
-
-    val pagerMonthFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
 
     Row(
         modifier = Modifier.fillMaxWidth(),

@@ -24,18 +24,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import com.squaredem.composecalendar.composable.CalendarContent
+import java.text.DateFormat
 import java.time.LocalDate
-import java.time.OffsetTime
 
 @Composable
 fun ComposeCalendar(
     startDate: LocalDate = LocalDate.now(),
     minDate: LocalDate = LocalDate.MIN,
     maxDate: LocalDate = LocalDate.MAX,
+    showSelectedDate: Boolean = true,
+    selectedDateFormat: DateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT),
     onDone: (millis: LocalDate) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val selectedDate = remember { mutableStateOf(startDate) }
+    val selectedDate = remember { mutableStateOf(LocalDate.now()) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -56,9 +58,9 @@ fun ComposeCalendar(
                 startDate = startDate,
                 minDate = minDate,
                 maxDate = maxDate,
-                onSelected = {
-                    selectedDate.value = it
-                }
+                onDateSelected = { selectedDate.value = it },
+                showSelectedDate = showSelectedDate,
+                selectedDateFormat = selectedDateFormat
             )
         }
     )

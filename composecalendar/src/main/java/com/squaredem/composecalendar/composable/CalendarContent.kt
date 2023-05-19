@@ -16,11 +16,16 @@
 
 package com.squaredem.composecalendar.composable
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,14 +39,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import com.squaredem.composecalendar.daterange.DateRange
 import com.squaredem.composecalendar.daterange.DateRangeStep
 import com.squaredem.composecalendar.daterange.rangeTo
 import com.squaredem.composecalendar.utils.LogCompositions
 import kotlinx.coroutines.launch
+import java.text.DateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.TextStyle
@@ -50,13 +53,15 @@ import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun CalendarContent(
     startDate: LocalDate,
     minDate: LocalDate,
     maxDate: LocalDate,
-    onSelected: (LocalDate) -> Unit,
+    onDateSelected: (LocalDate) -> Unit,
+    showSelectedDate: Boolean,
+    selectedDateFormat: DateFormat
 ) {
     LogCompositions("CalendarContent")
 
@@ -79,7 +84,7 @@ internal fun CalendarContent(
     }
 
     val setSelectedDate: (LocalDate) -> Unit = {
-        onSelected(it)
+        onDateSelected(it)
         selectedDate.value = it
     }
 
@@ -96,10 +101,15 @@ internal fun CalendarContent(
         modifier = Modifier.wrapContentHeight(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        CalendarTopBar(selectedDate.value)
+        if (showSelectedDate) {
+            CalendarTopBar(
+                selectedDate = selectedDate.value,
+                dateFormat = selectedDateFormat
+            )
+        }
 
         CalendarMonthYearSelector(
-            currentPagerDate.value,
+            pagerDate = currentPagerDate.value,
             onChipClicked = { isPickingYear.value = !isPickingYear.value },
             onNextMonth = {
                 coroutineScope.launch {
@@ -123,58 +133,63 @@ internal fun CalendarContent(
             }
         )
 
-        if (!isPickingYear.value) {
+        Box {
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                DayOfWeek.values().forEach {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = it.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-            }
-
-            HorizontalPager(
-                count = totalPageCount,
-                state = pagerState
-            ) { page ->
-                val currentDate = getDateFromCurrentPage(page, dateRange)
-                currentDate?.let {
-                    // grid
-                    CalendarGrid(
-                        it.withDayOfMonth(1),
-                        dateRange,
-                        selectedDate.value,
-                        setSelectedDate,
-                        true
-                    )
-                }
-            }
-
-        } else {
-
-            CalendarYearGrid(
-                gridState = gridState,
-                dateRangeByYear = dateRangeByYear,
-                selectedYear = selectedDate.value.year,
-                currentYear = startDate.year,
-                onYearSelected = { year ->
-                    coroutineScope.launch {
-                        val newPage = dateRange.indexOfFirst {
-                            it.year == year && it.month == selectedDate.value.month
-                        }
-                        pagerState.scrollToPage(newPage)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    DayOfWeek.values().forEach {
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = it.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.SemiBold
+                        )
                     }
-                    currentPagerDate.value = currentPagerDate.value.withYear(year)
-                    isPickingYear.value = false
                 }
-            )
+                HorizontalPager(
+                    pageCount = totalPageCount,
+                    state = pagerState
+                ) { page ->
+                    val currentDate = getDateFromCurrentPage(page, dateRange)
+                    currentDate?.let {
+                        // grid
+                        CalendarGrid(
+                            it.withDayOfMonth(1),
+                            dateRange,
+                            selectedDate.value,
+                            setSelectedDate
+                        )
+                    }
+                }
 
+            }
+
+            if (isPickingYear.value) {
+                Surface {
+                    CalendarYearGrid(
+                        gridState = gridState,
+                        dateRangeByYear = dateRangeByYear,
+                        selectedYear = selectedDate.value.year,
+                        currentYear = startDate.year,
+                        onYearSelected = { year ->
+                            coroutineScope.launch {
+                                val newPage = dateRange.indexOfFirst {
+                                    it.year == year && it.month == selectedDate.value.month
+                                }
+                                pagerState.scrollToPage(newPage)
+                            }
+                            currentPagerDate.value = currentPagerDate.value.withYear(year)
+                            isPickingYear.value = false
+                        }
+                    )
+                }
+            }
         }
+
     }
 }
 
@@ -233,6 +248,8 @@ private fun Preview() {
         startDate = LocalDate.now(),
         minDate = LocalDate.now(),
         maxDate = LocalDate.MAX,
-        onSelected = {},
+        onDateSelected = {},
+        showSelectedDate = true,
+        selectedDateFormat = DateFormat.getDateInstance(DateFormat.DEFAULT)
     )
 }
